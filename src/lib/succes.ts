@@ -24,14 +24,14 @@ export const shootFireworks = () => {
 
     const particleCount = 50 * (timeLeft / duration);
     // since particles fall down, start a bit higher than random
-    confetti(
+    void confetti(
       Object.assign({}, defaults, {
         particleCount,
         origin: { x: randomInRange(0.2, 0.4), y: Math.random() - 0.2 },
       })
     );
 
-    confetti(
+    void confetti(
       Object.assign({}, defaults, {
         particleCount,
         origin: { x: randomInRange(0.6, 0.8), y: Math.random() - 0.2 },
