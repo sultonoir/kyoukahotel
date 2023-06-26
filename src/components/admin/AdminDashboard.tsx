@@ -27,7 +27,7 @@ import {
 } from "@/components/ui/form";
 import React, { useState } from "react";
 import Heading from "../shared/Heading";
-import { type Payment } from "@/pages/admin/columns";
+import { type Payment } from "@/components/columnadmin/columns";
 
 interface reservations {
   reservation: Payment[];

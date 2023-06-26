@@ -3,7 +3,7 @@ import Container from "@/components/shared/Container";
 import EmptyState from "@/components/shared/EmptyState";
 import { api } from "@/utils/api";
 import React from "react";
-import AdminClient from "./AdminClient";
+import AdminClient from "../../components/columnadmin/AdminClient";
 import AuthShowcase from "@/components/form/AuthShowcase";
 import Loader from "@/components/shared/Loader";
 

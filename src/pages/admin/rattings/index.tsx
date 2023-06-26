@@ -1,7 +1,7 @@
 import Loader from "@/components/shared/Loader";
 import { api } from "@/utils/api";
 import React from "react";
-import RattingsClient from "./RattingsClient";
+import RattingsClient from "../../../components/columrating/RattingsClient";
 
 const index = () => {
   const { data } = api.user.getUser.useQuery();
