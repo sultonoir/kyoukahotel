@@ -14,132 +14,134 @@ datasource db {
   relationMode = "prisma"
 }
 
+enum Role{
+  admin
+  user
+}
+
 model User {
   id              String   @id @default(uuid())
   name            String?
   email           String     @unique
-  emailVerified   DateTime?
   image           String?
   hashedPassword  String?
+  guestId         String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
-  hasNotification Boolean?
-  description     String?     @db.VarChar(1000)
-  notification    Notification[]
+  hasNotifi       Boolean?
+  role            Role       @default(user)
+  notifi          Notifi[]
   accounts        Account[]
   reservations    Reservation[]
-  favorite        Favorite[]
   listing         Listing[]
   rating          Rating[]
-  comment         Comment[]
-  adminId         String?
-  admin           Admin?      @relation(fields: [adminId], references: [id], onDelete: Cascade)
-
-  @@index([adminId])
+  banner          Banner[]
 }
 
-model Admin {
-  id              String   @id @default(uuid())
-  name            String?
-  email           String     @unique
-  emailVerified   DateTime?
-  image           String?
-  hashedPassword  String?
-  hasNotification Boolean?
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
-  listings        Listing[]
-  reservations    Reservation[]
-  user            User[]
-  notification    Notification[]
-}
 
-model Notification{
+model Notifi{
   id              String     @id @default(uuid())
-  body            String?
-  userId          String?
+  message         String
+  guestName       String?
+  guestImage      String?
+  userId          String?    
   createdAt       DateTime   @default(now())
   user            User?       @relation(fields: [userId], references: [id],onDelete: Cascade)
-  listingId       String
-  listing         Listing    @relation(fields: [listingId], references: [id],onDelete: Cascade)
-  adminId         String?
-  admin           Admin?      @relation(fields: [adminId], references: [id], onDelete: Cascade)
-
+  listingId       String?
+  listing         Listing?    @relation(fields: [listingId], references: [id],onDelete: Cascade)
+  reservationsId  String?
+  reservation     Reservation?    @relation(fields: [reservationsId], references: [id],onDelete: Cascade)
   @@index([userId])
   @@index([listingId])
-  @@index([adminId])
+  @@index([reservationsId])
 }
 
 model Listing {
   id              String   @id @default(uuid())
-  fasilitas       Fasilitas[]
+  title           String   @unique
+  description     String   @db.Text
   imageSrc        Image[]
-  createdAt       DateTime   @default(now())
-  category        String
-  adult           Int?
-  kids            Int?
-  children        Int?
-  roomCount       Int?
-  bathroomCount   Int?
-  guestCount      Int?
+  createdAt       DateTime @default(now())
+  bed             Int
+  roomCount       Int
+  guestCount      Int
   price           Int
-  location        String
-  title           String
-  description     String @db.VarChar(1000)
+  discount        Int?
+  imagePromo      String?
   rating          Rating[]
-  notification    Notification[]
+  notifi          Notifi[]
   reservations    Reservation[]
-  comment         Comment[]
-  adminId         String?
-  admin           Admin?     @relation(fields: [adminId], references: [id], onDelete: Cascade)
-  favorite        Favorite[]
+  fasilitas       Fasilitas[]   // Menambahkan relasi fasilitas
   userId          String?
   user            User?      @relation(fields: [userId],references: [id],onDelete: Cascade)
-
   @@index([userId])
-  @@index([adminId])
+}
+
+
+
+
+model Image{
+  id                 String   @id @default(uuid())
+  img                String  
+  createdAt          DateTime @default(now())
+  listingId          String
+  listing            Listing  @relation(fields: [listingId],references: [id],onDelete: Cascade)
+
+  @@index([listingId])
+}
+
+model Fasilitas{
+  id              String   @id @default(uuid())
+  fasilitas       String
+  listingId       String
+  listing         Listing   @relation(fields: [listingId],references: [id],onDelete: Cascade)
+
+  @@index([listingId])
 }
 
 model Rating{
   id              String   @id @default(uuid())
-  nilai           Int?
-  listingId       String
-  listing         Listing    @relation(fields: [listingId], references: [id],onDelete: Cascade)
+  message         String   @db.Text
+  value           Int
+  guestName       String?
+  guestImage      String?
+  guestEmail      String?
+  listingId       String?
+  createdAt          DateTime @default(now())
+  listing         Listing?    @relation(fields: [listingId], references: [id],onDelete: Cascade)
   userId          String?
   user            User?      @relation(fields: [userId],references: [id],onDelete: Cascade)
+  reservationId   String?       
+  reservation     Reservation?   @relation(fields: [reservationId], references: [id], onDelete: Cascade)
   @@index([listingId])
   @@index([userId])
+  @@index([reservationId])
 }
 
-model Comment{
-  id              String   @id @default(uuid())
-  body            String?
-  listingId       String
-  listing         Listing    @relation(fields: [listingId], references: [id],onDelete: Cascade)
-  userId          String?
-  user            User?      @relation(fields: [userId],references: [id],onDelete: Cascade)
-  @@index([listingId])
-  @@index([userId])
-}
 
 model Reservation {
   id              String   @id @default(uuid())
   startDate       DateTime
   endDate         DateTime
   totalPrice      Int
+  rooms           Int
   status          String?
+  guestName       String?
+  guestImage      String?
+  guestEmail      String?
+  guestId         String?
+  adminId         String?
+  title           String?
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
-  userId          String
-  user            User       @relation(fields: [userId], references: [id],onDelete: Cascade)
+  userId          String?
+  user            User?       @relation(fields: [userId], references: [email],onDelete: Cascade)
   listingId       String
   listing         Listing    @relation(fields: [listingId], references: [id],onDelete: Cascade)
-  adminId         String?
-  admin           Admin?      @relation(fields: [adminId], references: [id], onDelete: Cascade)
-
+  notifi          Notifi[]
+  rating          Rating[]
   @@index([userId])
   @@index([listingId])
-  @@index([adminId])
 }
 
 model Account {
@@ -152,7 +154,7 @@ model Account {
   expires_at         Int?
   token_type         String?
   scope              String?
-  id_token           String?  @db.VarChar(1000)
+  id_token           String?  @db.Text
   session_state      String?
   userId             String
   user               User      @relation(fields: [userId], references: [id])
@@ -160,33 +162,18 @@ model Account {
   @@index([userId])
 }
 
-model Image{
-  id                 String   @id @default(uuid())
-  img                String   
-  listingId          String
-  listing            Listing  @relation(fields: [listingId],references: [id],onDelete: Cascade)
-
-  @@index([listingId])
-}
-model Fasilitas{
-  id                 String   @id @default(uuid())
-  label              String   
-  listingId          String
-  listing            Listing  @relation(fields: [listingId],references: [id],onDelete: Cascade)
-
-  @@index([listingId])
-}
-
-model Favorite{
-  id                 String   @id @default(uuid())
-  userId             String
-  user               User     @relation(fields: [userId],references: [id],onDelete: Cascade)
-  listing            Listing @relation(fields: [listingId], references: [id],onDelete: Cascade)
-  listingId          String
-
+model Banner{
+  id                String   @id @default(uuid())
+  image             String
+  title             String?
+  userId            String
+  createdAt         DateTime   @default(now())
+  user              User      @relation(fields: [userId], references: [email],onDelete: Cascade)
   @@index([userId])
-  @@index([listingId])
 }
+
+
+
 
 
 
