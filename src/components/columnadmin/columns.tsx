@@ -132,10 +132,10 @@ export const columns: ColumnDef<Payment>[] = [
             Added ratings
           </p>
         );
-      } else {
+      } else if (status === "capture") {
         return (
           <p className="rounded-lg bg-secondary px-2 py-1 text-center text-primary">
-            Pending
+            Captured
           </p>
         );
       }
@@ -194,10 +194,6 @@ export const columns: ColumnDef<Payment>[] = [
           reservationsId: payment.id,
         });
       };
-      const { data } = api.listings.getReservationsId.useQuery({
-        id: payment.id,
-      });
-      console.log(data);
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -385,7 +385,7 @@ export const ListingsRouter = createTRPCRouter({
       const response = await fetch(
         `https://api.sandbox.midtrans.com/v2/${input.id}/status`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             accept: "application/json",
             "content-type": "application/json",
