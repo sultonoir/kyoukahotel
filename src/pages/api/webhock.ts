@@ -16,6 +16,13 @@ const webhookHandler = async (
 ): Promise<void> => {
   if (req.method === "POST") {
     try {
+      req.headers = {
+        "X-Append-Notification":
+          "https://kyoukahotel.vercel.app,https://example.com/test2",
+        "content-type": "application/json",
+        authorization:
+          "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6SGFqaW1ldGUzNjU=",
+      };
       const body = req.body;
       console.log("Webhook body:", body);
       if (body.transaction_Status == "capture") {
