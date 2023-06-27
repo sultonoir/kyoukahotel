@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { stripe } from "@/lib/stripe";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { type Fasilitas } from "@prisma/client";
@@ -373,4 +375,35 @@ export const ListingsRouter = createTRPCRouter({
     });
     return listings;
   }),
+  getReservationsId: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const response = await fetch(
+        `https://api.sandbox.midtrans.com/v2/${input.id}/status`,
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            authorization:
+              "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6",
+          },
+        }
+      );
+      const data = await response.json();
+      const res = await ctx.prisma.reservation.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          status: data.transaction_status,
+        },
+      });
+
+      return res;
+    }),
 });
