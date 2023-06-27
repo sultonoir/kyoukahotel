@@ -17,8 +17,7 @@ const webhookHandler = async (
   if (req.method === "POST") {
     try {
       req.headers = {
-        "X-Append-Notification":
-          "https://kyoukahotel.vercel.app,https://example.com/test2",
+        "X-Append-Notification": "https://kyoukahotel.vercel.app/api/webhock",
         "content-type": "application/json",
         authorization:
           "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6SGFqaW1ldGUzNjU=",
