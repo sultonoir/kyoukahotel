@@ -1,11 +1,18 @@
 import ListingCard from "@/components/listing/ListingCard";
 import Navbar from "@/components/navbar/Navbar";
 import Container from "@/components/shared/Container";
+import Loader from "@/components/shared/Loader";
 import { api } from "@/utils/api";
 import React from "react";
 
 const index = () => {
-  const { data } = api.listings.getListings.useQuery();
+  const { data, isLoading } = api.listings.getListings.useQuery();
+  if (!data) {
+    return <Loader />;
+  }
+  if (isLoading) {
+    return <Loader />;
+  }
   return (
     <>
       <Navbar />

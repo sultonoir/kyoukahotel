@@ -6,15 +6,19 @@ import HomeProfile from "./HomePofile";
 import { api } from "@/utils/api";
 import HomePromosi from "./HomePromosi";
 import HoomeUserFeedback from "./HoomeUserFeedback";
+import Loader from "../shared/Loader";
 
 const HomeProps = () => {
-  const { data: rattings } = api.user.getRatings.useQuery();
-  const { data: promosi } = api.user.getbanner.useQuery();
+  const { data: rattings, isLoading } = api.user.getRatings.useQuery();
+  const { data: promosi, isLoading: load } = api.user.getbanner.useQuery();
   if (!rattings) {
-    return null;
+    return <Loader />;
   }
   if (!promosi) {
-    return null;
+    return <Loader />;
+  }
+  if (load && isLoading) {
+    return <Loader />;
   }
 
   return (

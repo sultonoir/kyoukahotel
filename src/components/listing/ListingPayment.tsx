@@ -158,9 +158,9 @@ const ListingPayment: React.FC<ListingCardProps> = ({
             gross_amount: reservation?.totalPrice,
           },
           customer_details: {
-            first_name: "Budi",
-            last_name: "Utomo",
-            email: "budi.utomo@midtrans.com",
+            first_name: reservation.guestName,
+            last_name: "",
+            email: reservation.guestEmail,
             phone: "081223323423",
           },
           credit_card: { secure: true },

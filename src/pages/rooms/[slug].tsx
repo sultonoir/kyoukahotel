@@ -5,18 +5,22 @@ import Navbar from "@/components/navbar/Navbar";
 import ListingHead from "@/components/listing/ListingHead";
 import ListingInfo from "@/components/listing/ListingInfo";
 import ListingReservation from "@/components/listing/ListingReservation";
+import Loader from "@/components/shared/Loader";
 
 const RoomPage = () => {
   const router = useRouter();
   const { slug } = router.query;
-  console.log(slug);
   const listingId = Array.isArray(slug) ? slug[0] : slug;
-  const { data: listing } = api.listings.getListingById.useQuery({
+  const { data: listing, isLoading } = api.listings.getListingById.useQuery({
     listingId: listingId ?? "",
   });
 
+  if (isLoading) {
+    return <Loader />;
+  }
+
   if (!listing) {
-    return <p>404</p>;
+    return <Loader />;
   }
 
   return (

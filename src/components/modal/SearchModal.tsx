@@ -34,8 +34,8 @@ const SearchModal = () => {
   const [guestCount, setGuestCount] = useState(1);
   const [roomCount, setRoomCount] = useState(1);
   const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(2022, 0, 20),
-    to: addDays(new Date(2022, 0, 20), 20),
+    from: new Date(),
+    to: addDays(new Date(), 2),
   });
 
   const onBack = useCallback(() => {
@@ -114,6 +114,7 @@ const SearchModal = () => {
         selected={date}
         onSelect={setDate}
         numberOfMonths={2}
+        disabled={date?.from}
       />
     </div>
   );
