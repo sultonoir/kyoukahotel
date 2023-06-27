@@ -1,8 +1,9 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { prisma } from "@/server/db";
-import { type NextApiRequest, type NextApiResponse } from "next";
+// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+import { NextApiRequest, NextApiResponse } from "next";
 
 export const config = {
   api: {
@@ -16,7 +17,7 @@ const webhookHandler = async (
 ): Promise<void> => {
   if (req.method === "POST") {
     try {
-      req.headers = {
+      const headers = {
         "X-Append-Notification": "https://kyoukahotel.vercel.app/api/webhock",
         "content-type": "application/json",
         authorization:
@@ -24,9 +25,9 @@ const webhookHandler = async (
       };
       const body = req.body;
       console.log("Webhook body:", body);
-      if (body.transaction_Status == "capture") {
-        console.log(body.transaction_Status);
-      } else if (body.transaction_Status == "accept") {
+      if (body.transaction_status === "capture") {
+        console.log(body.transaction_status);
+      } else if (body.transaction_status === "accept") {
         await prisma.reservation.update({
           where: {
             id: body.order_id,
