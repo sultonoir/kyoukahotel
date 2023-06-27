@@ -194,6 +194,10 @@ export const columns: ColumnDef<Payment>[] = [
           reservationsId: payment.id,
         });
       };
+      const { data } = api.listings.getReservationsId.useQuery({
+        id: payment.id,
+      });
+      console.log(data);
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

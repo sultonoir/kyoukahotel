@@ -4,12 +4,12 @@ import Link from "next/link";
 
 const Logo = () => {
   return (
-    <Link href="/">
-      <Avatar>
+    <Avatar>
+      <Link href={"/"}>
         <AvatarImage src="/logo.svg" />
         <AvatarFallback>CN</AvatarFallback>
-      </Avatar>
-    </Link>
+      </Link>
+    </Avatar>
   );
 };
 
