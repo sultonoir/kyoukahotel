@@ -27,7 +27,8 @@
     "**/*.ts",
     "**/*.tsx",
     "**/*.cjs",
-    "**/*.mjs"
+    "**/*.mjs",
+    "src/pages/api/webhock/index.js"
   ],
   "exclude": ["node_modules"]
 }
