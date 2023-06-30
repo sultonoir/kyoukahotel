@@ -5,12 +5,18 @@ import Loader from "@/components/shared/Loader";
 import { api } from "@/utils/api";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
 const SuccessClient = () => {
   const router = useRouter();
+  const params = useSearchParams();
+  const orderID = params?.get("order_id");
   const { data, isLoading } = api.user.getUser.useQuery();
+  const { mutate } = api.user.getInvoice.useMutation({});
+  mutate({
+    reservationsId: orderID ?? "",
+  });
   if (isLoading) {
     return <Loader />;
   }
