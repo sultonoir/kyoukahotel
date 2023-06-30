@@ -35,6 +35,7 @@ const HomeProfile: React.FC<HomeProfileProps> = ({ ratings }) => {
               src={`/lobi.jpg`}
               alt="logo"
               fill
+              priority
               sizes="100%"
               style={{ objectFit: "cover" }}
               quality={100}
@@ -45,6 +46,7 @@ const HomeProfile: React.FC<HomeProfileProps> = ({ ratings }) => {
               src={`/sky.jpg`}
               alt="logo"
               fill
+              priority
               sizes="100%"
               style={{ objectFit: "cover" }}
               quality={100}

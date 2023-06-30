@@ -49,7 +49,7 @@ const ListingInfo: React.FC<ListingInfoProps> = ({
             <ul key={fas.id}>
               <li className="flex flex-row gap-x-2">
                 <Check />
-                {fas.fasilitas}
+                <p className="capitalize">{fas.fasilitas}</p>
               </li>
             </ul>
           ))}

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-misused-promises */
@@ -134,8 +135,14 @@ export const columns: ColumnDef<Payment>[] = [
         );
       } else if (status === "capture") {
         return (
+          <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
+            success
+          </p>
+        );
+      } else if (status === "pending") {
+        return (
           <p className="rounded-lg bg-secondary px-2 py-1 text-center text-primary">
-            Captured
+            Pending
           </p>
         );
       }
@@ -194,6 +201,9 @@ export const columns: ColumnDef<Payment>[] = [
           reservationsId: payment.id,
         });
       };
+      const { data } = api.listings.getReservationsId.useQuery({
+        id: payment.id,
+      });
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -47,6 +47,7 @@ const HoomeUserFeedback: React.FC<HoomeUserFeedbackProps> = ({ ratings }) => {
               prevEl: ".swiper-button-prev",
               nextEl: ".swiper-button-next",
             }}
+            autoplay={true}
             centeredSlides={true}
             pagination={{
               clickable: true,

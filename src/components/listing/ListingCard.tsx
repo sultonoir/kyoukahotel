@@ -34,7 +34,6 @@ import {
   User2Icon,
 } from "lucide-react";
 import { ChevronRight } from "lucide-react";
-import { play } from "../types";
 import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
 import EditListingModal from "../modal/EditListingModal";
@@ -94,6 +93,19 @@ const ListingCard: React.FC<ListingCardProps> = ({
     const formattedPrice = formatter.format(listing.price);
     return formattedPrice;
   }, [listing.price, reservation]);
+
+  const priceDiscount = useMemo(() => {
+    const formatter = new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+    });
+    if (listing.discount && listing.discount > 0) {
+      const discountAmount = (listing.price * listing.discount) / 100;
+      const discount = listing.price - discountAmount;
+      const displayDiscount = formatter.format(discount);
+      return displayDiscount;
+    }
+  }, [listing.discount, listing.price]);
 
   const { mutate: invoice, isLoading: loading } =
     api.user.getInvoice.useMutation({
@@ -156,11 +168,31 @@ const ListingCard: React.FC<ListingCardProps> = ({
       <CardHeader>
         <Link href={`/rooms/${listing.title}`}>
           <CardTitle
-            className={`${play.className} capitalize hover:text-rose-500 hover:underline`}
+            className={`font-normal capitalize hover:text-rose-500 hover:underline`}
           >
             {listing.title}
           </CardTitle>
         </Link>
+        {listing.discount && listing.discount > 0 ? (
+          <div className="flex flex-col">
+            <p className="text-lg font-semibold text-primary">
+              {priceDiscount}
+            </p>
+            <div className="flex gap-2">
+              <p className="rounded-lg bg-rose-300 px-2 text-destructive">
+                - {listing.discount} %
+              </p>
+              <p className="font-normal text-neutral-500 line-through">
+                {price}
+              </p>
+            </div>
+          </div>
+        ) : (
+          <CardDescription className="text-lg font-semibold text-primary">
+            {price}
+          </CardDescription>
+        )}
+
         {reservation ? (
           <div className="flex flex-col">
             <p>
@@ -168,7 +200,8 @@ const ListingCard: React.FC<ListingCardProps> = ({
               {format(reservation.endDate, "PP")}
             </p>
             <p className="text-neutral-500">
-              {reservation.rooms} <span>Rooms</span>
+              {reservation.rooms}{" "}
+              <span className="text-neutral-500">Rooms</span>
             </p>
           </div>
         ) : (
@@ -178,30 +211,25 @@ const ListingCard: React.FC<ListingCardProps> = ({
                 <BedDouble size={20} className="text-rose-500" />
                 <p>{listing.bed}</p>
               </div>
-              <p className="capitalize">bed</p>
+              <p className="capitalize text-neutral-500">bed</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="flex items-center gap-2">
                 <User2Icon size={20} className="text-rose-500" />
                 <p>{listing.guestCount}</p>
               </div>
-              <p className="capitalize">guest max</p>
+              <p className="capitalize text-neutral-500">guest max</p>
             </div>
-            {admin && (
-              <div className="flex flex-col items-center">
-                <div className="flex items-center gap-2">
-                  <DoorClosedIcon size={20} className="text-rose-500" />
-                  <p>{listing.roomCount}</p>
-                </div>
-                <p className="capitalize">rooms</p>
+
+            <div className="flex flex-col items-center">
+              <div className="flex items-center gap-2">
+                <DoorClosedIcon size={20} className="text-rose-500" />
+                <p>{listing.roomCount}</p>
               </div>
-            )}
+              <p className="capitalize text-neutral-500">rooms</p>
+            </div>
           </div>
         )}
-
-        <CardDescription className="text-lg text-primary">
-          {price}
-        </CardDescription>
       </CardHeader>
       {admin && (
         <CardFooter className="flex flex-col items-center gap-2">
@@ -219,7 +247,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </CardFooter>
       )}
-      {pending && (
+      {/* {pending && (
         <CardFooter className="flex flex-col items-center gap-2">
           <div className="flex w-full items-center gap-2">
             <Button
@@ -241,12 +269,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
             </Button>
           </div>
         </CardFooter>
-      )}
+      )} */}
       {rating && (
         <CardFooter className="flex flex-col items-center gap-2">
           <div className="flex w-full items-center gap-2">
             <Rattings id={reservation?.id ?? ""} reservation={reservation} />
-            <Button
+            {/* <Button
               disabled={load}
               className="w-full bg-rose-600 text-white hover:bg-rose-500"
               onClick={only}
@@ -262,7 +290,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
                   invoice
                 </>
               )}
-            </Button>
+            </Button> */}
           </div>
         </CardFooter>
       )}

@@ -2,21 +2,23 @@ import ListingCard from "@/components/listing/ListingCard";
 import Navbar from "@/components/navbar/Navbar";
 import Container from "@/components/shared/Container";
 import EmptyState from "@/components/shared/EmptyState";
+import Loader from "@/components/shared/Loader";
 import { api } from "@/utils/api";
 import React from "react";
 
 const index = () => {
-  const { data } = api.user.getUser.useQuery();
+  const { data, isLoading } = api.user.getUser.useQuery();
 
-  if (!data) {
-    return null;
+  if (isLoading) {
+    return <Loader />;
   }
+
   return (
     <>
       <Navbar />
-      <div className="pt-20">
+      <div className="py-20">
         <Container>
-          {data.reservations.length === 0 && (
+          {data && data.reservations.length === 0 && (
             <EmptyState
               title="You not have reservations"
               subtitle="Make reservations first"
@@ -24,7 +26,7 @@ const index = () => {
             />
           )}
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
-            {data &&
+            {/* {data &&
               data.reservations
                 .filter((res) => res.status === "pending")
                 .map((listing) => (
@@ -34,10 +36,10 @@ const index = () => {
                     reservation={listing}
                     pending
                   />
-                ))}
-            {data &&
+                ))} */}
+            {/* {data &&
               data.reservations
-                .filter((res) => res.status === "success")
+                .filter((res) => res.status === "capture")
                 .map((listing) => (
                   <ListingCard
                     key={listing.id}
@@ -45,7 +47,7 @@ const index = () => {
                     reservation={listing}
                     completed
                   />
-                ))}
+                ))} */}
             {data &&
               data.reservations
                 .filter((res) => res.status === "completed")
@@ -65,7 +67,6 @@ const index = () => {
                     key={listing.id}
                     listing={listing.listing}
                     reservation={listing}
-                    completed
                   />
                 ))}
           </div>

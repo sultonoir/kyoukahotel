@@ -8,7 +8,7 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const data = req.body;
+    const data = await req.body;
     // Proses data yang diterima sesuai kebutuhan Anda
     // Misalnya, mencetak data yang diterima
     await prisma.reservation.update({

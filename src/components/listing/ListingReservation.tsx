@@ -91,6 +91,15 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
   const priceFormat = formatter.format(price);
   const discountPrice = formatter.format(calculateTotalPrice().discountedPrice);
 
+  const displayDiscount = React.useMemo(() => {
+    if (discount && discount > 0) {
+      const discountPrice = (price * discount) / 100;
+      const disountDecerment = price - discountPrice;
+      const discountPriceFormat = formatter.format(disountDecerment);
+      return discountPriceFormat;
+    }
+  }, [discount, price]);
+
   const loginModal = useLoginModal();
   const router = useRouter();
   const { data: user } = api.user.getUser.useQuery();
@@ -103,6 +112,20 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       toast.error(e.message);
     },
   });
+
+  const onDiscount = () => {
+    mutate({
+      title: listingId,
+      rooms: guestCount,
+      totalPrice: calculateTotalPrice().discountedPrice,
+      userId: user?.email ?? "",
+      starDate: date?.from || new Date(),
+      endDate: date?.to || new Date(),
+      guestName: user?.name ?? "",
+      guestEmail: user?.email,
+      guestImage: user?.image ?? "",
+    });
+  };
 
   const onReservasi = () => {
     mutate({
@@ -118,12 +141,24 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
     });
   };
 
+  const onPayment = React.useCallback(() => {
+    if (discount) {
+      return onDiscount();
+    }
+    return onReservasi();
+  }, [discount]);
+
   return (
     <Card className="flex w-full flex-col items-center gap-5 p-4">
-      <CardTitle className="text-2xl text-primary">
-        {priceFormat} <span className="ml-2">/Nigth</span>
-      </CardTitle>
-
+      {discount ? (
+        <CardTitle className="text-2xl text-primary">
+          {displayDiscount} <span className="ml-2">/Nigth</span>
+        </CardTitle>
+      ) : (
+        <CardTitle className="text-2xl text-primary">
+          {priceFormat} <span className="ml-2">/Nigth</span>
+        </CardTitle>
+      )}
       <Popover>
         <PopoverTrigger asChild>
           <Button
@@ -184,20 +219,23 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         </div>
       </div>
       {discount ? (
-        <div className="flex w-full flex-col items-center gap-3">
+        <div className="flex w-full flex-col gap-3">
           <div className="flex w-full justify-between">
-            <p className="text-xl">Discount</p>
-            <span className="text-2xl line-through">{discount} %</span>
+            <p className="text-xl text-neutral-500">Discount</p>
+            <span className="text-2xl ">- {discount} %</span>
           </div>
+          <p className="flex items-end justify-end text-neutral-500 line-through">
+            {totalPriceFormat}
+          </p>
           <div className="flex w-full justify-between">
-            <p className="text-xl">Total:</p>
-            <span className="text-2xl line-through">{discountPrice}</span>
+            <p className="text-xl text-neutral-500">Total:</p>
+            <span className="font text-2xl font-semibold">{discountPrice}</span>
           </div>
         </div>
       ) : (
         <div className="flex w-full justify-between">
-          <p className="text-xl">Total:</p>
-          <span className="text-2xl">{totalPriceFormat}</span>
+          <p className="text-xl text-neutral-500">Total:</p>
+          <span className="text-2xl font-semibold">{totalPriceFormat}</span>
         </div>
       )}
 
@@ -205,7 +243,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
         {user ? (
           <Button
             className="w-full bg-rose-600 text-white hover:bg-rose-500"
-            onClick={onReservasi}
+            onClick={onPayment}
           >
             Reserve
           </Button>

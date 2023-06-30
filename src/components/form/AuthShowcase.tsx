@@ -64,14 +64,14 @@ const AuthShowcase = () => {
                 <Input
                   disabled
                   value={email}
-                  placeholder="email"
+                  placeholder="Email"
                   type="Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
               ) : (
                 <Input
                   value={email}
-                  placeholder="email"
+                  placeholder="Email"
                   type="Email"
                   onChange={(e) => setEmail(e.target.value)}
                 />
@@ -97,12 +97,18 @@ const AuthShowcase = () => {
         </CardContent>
         <CardFooter>
           {isLoading ? (
-            <Button disabled className="w-full">
+            <Button
+              disabled
+              className="w-full bg-rose-600 text-white hover:bg-rose-500"
+            >
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Please wait
             </Button>
           ) : (
-            <Button className="w-full" onClick={onSumbit}>
+            <Button
+              className="w-full bg-rose-600 text-white hover:bg-rose-500"
+              onClick={onSumbit}
+            >
               Sumbit
             </Button>
           )}

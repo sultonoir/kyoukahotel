@@ -11,13 +11,17 @@ import Loader from "../shared/Loader";
 const HomeProps = () => {
   const { data: rattings, isLoading } = api.user.getRatings.useQuery();
   const { data: promosi, isLoading: load } = api.user.getbanner.useQuery();
+  if (isLoading) {
+    return <Loader />;
+  }
+
+  if (load) {
+    return <Loader />;
+  }
   if (!rattings) {
     return <Loader />;
   }
   if (!promosi) {
-    return <Loader />;
-  }
-  if (load && isLoading) {
     return <Loader />;
   }
 

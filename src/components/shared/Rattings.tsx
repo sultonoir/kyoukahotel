@@ -61,8 +61,8 @@ const Rattings: React.FC<RattingsProps> = ({ reservation, id }) => {
 
   return (
     <Dialog>
-      <DialogTrigger>
-        <Button>
+      <DialogTrigger className="w-full">
+        <Button className="w-full bg-rose-600 text-white hover:bg-rose-500">
           <StarIcon className="mr-2" />
           Rattings
         </Button>

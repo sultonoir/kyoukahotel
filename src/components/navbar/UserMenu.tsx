@@ -101,7 +101,7 @@ const UserMenu = () => {
               Paymet
             </DropdownMenuItem>
             <DropdownMenuSub>
-              <DropdownMenuSubTrigger onClick={getNotifications}>
+              <DropdownMenuSubTrigger asChild onClick={getNotifications}>
                 <Notifications notifikasi={data.notifi} userId={data.id} />
               </DropdownMenuSubTrigger>
             </DropdownMenuSub>

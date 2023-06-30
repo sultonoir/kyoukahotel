@@ -1,10 +1,10 @@
 "use client";
 import { type Banner } from "@prisma/client";
 import Image from "next/image";
-import React from "react";
 import Container from "../shared/Container";
 import { motion } from "framer-motion";
 import H1 from "../shared/H1";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 interface HomePromosiProps {
   promosi: Banner[];
 }
@@ -26,25 +26,42 @@ const HomePromosi: React.FC<HomePromosiProps> = ({ promosi }) => {
         <H1>special offers</H1>
         <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
           {promosi.map((promo) => (
-            <div
-              className="group h-[300px] overflow-hidden rounded-xl border shadow-sm sm:col-span-4 xl:col-span-2"
-              key={promo.id}
-            >
-              <div className="relative h-full">
-                <Image
-                  src={promo.image}
-                  alt={promo.title || ""}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  quality={100}
-                  sizes="100%"
-                  className="duration-700 ease-in-out group-hover:scale-110"
-                />
-                <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
-                  {promo.title}
-                </p>
-              </div>
-            </div>
+            <Dialog key={promo.id}>
+              <DialogTrigger
+                className="group h-[300px] overflow-hidden rounded-xl border shadow-sm sm:col-span-4 xl:col-span-2"
+                key={promo.id}
+              >
+                <div className="relative h-full">
+                  <Image
+                    src={promo.image}
+                    alt={promo.title || ""}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    quality={100}
+                    sizes="100%"
+                    className="duration-700 ease-in-out group-hover:scale-110"
+                  />
+                  <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
+                    {promo.title}
+                  </p>
+                </div>
+              </DialogTrigger>
+              <DialogContent className="group fixed left-1/2 top-1/2 h-[300px]  -translate-x-1/2 -translate-y-1/2 transform overflow-hidden rounded-xl border shadow-sm sm:col-span-4 sm:h-[700px] sm:max-w-[700px] xl:col-span-2">
+                <div className="relative">
+                  <Image
+                    src={promo.image}
+                    alt={promo.title || ""}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    quality={100}
+                    sizes="100%"
+                  />
+                  <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
+                    {promo.title}
+                  </p>
+                </div>
+              </DialogContent>
+            </Dialog>
           ))}
         </div>
       </motion.div>

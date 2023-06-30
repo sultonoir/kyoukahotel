@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { stripe } from "@/lib/stripe";
@@ -395,6 +396,17 @@ export const ListingsRouter = createTRPCRouter({
         }
       );
       const data = await response.json();
+      const reserv = await ctx.prisma.reservation.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      if (reserv?.status === "completed") {
+        return null;
+      }
+      if (reserv?.status === "rattings") {
+        return null;
+      }
       const res = await ctx.prisma.reservation.update({
         where: {
           id: input.id,

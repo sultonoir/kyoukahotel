@@ -11,7 +11,7 @@ import {
   type Reservation,
   type User,
 } from "@prisma/client";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { toast } from "react-hot-toast";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -36,9 +36,10 @@ import {
   User2Icon,
 } from "lucide-react";
 import { ChevronRight } from "lucide-react";
-import { format } from "date-fns";
+import { add, format } from "date-fns";
 import { play } from "../types";
 import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 
 interface ListingCardProps {
   listing: Listing & {
@@ -73,11 +74,6 @@ const ListingPayment: React.FC<ListingCardProps> = ({
     });
   };
 
-  const { mutate: createPayment } = api.user.createPayment.useMutation({
-    onSuccess: (e) => {
-      window.location.href = e ?? "";
-    },
-  });
   const price = useMemo(() => {
     const formatter = new Intl.NumberFormat("id-ID", {
       style: "currency",
@@ -92,101 +88,33 @@ const ListingPayment: React.FC<ListingCardProps> = ({
     return formattedPrice;
   }, [listing.price, reservation]);
 
-  const { mutate: delOtomastis } = api.user.deleteReservasi.useMutation();
-
-  const deletOtomatis = () => {
-    delOtomastis({
-      listingId: listing.id,
-      reservationsId: reservation?.id ?? "",
-      rooms: reservation?.rooms ?? 0,
-    });
-  };
-
-  const jalankanDeleteReservasiSetelahSatuMenit = () => {
-    // Membuat time stamp 1 menit yang lalu
-    const satuMenitYangLalu = new Date(reservation?.createdAt ?? new Date());
-    satuMenitYangLalu.setMinutes(satuMenitYangLalu.getMinutes() - 1);
-
-    // Mendapatkan waktu saat ini
-    const waktuSaatIni = new Date();
-
-    // Memeriksa apakah sudah satu menit sejak waktu satu menit yang lalu
-    if (waktuSaatIni > satuMenitYangLalu) {
-      deletOtomatis();
-    } else {
-      // Menunggu satu menit sebelum menjalankan deletOtomatis
-      const timeoutId = setTimeout(deletOtomatis, 60000); // 60000 milidetik = 1 menit
-
-      // Membersihkan timeout saat komponen unmount
-      return () => clearTimeout(timeoutId);
-    }
-  };
-
   useEffect(() => {
-    let timerId: any;
+    const durasi = { minutes: 1 };
+    const adds = add(reservation.startDate, durasi);
+    const newdate = new Date();
+    const expire = newdate > adds;
 
-    // Memanggil fungsi jalankanDeleteReservasiSetelahSatuMenit
-    const jalankanTimeout = () => {
-      timerId = jalankanDeleteReservasiSetelahSatuMenit();
-    };
-
-    // Memanggil jalankanTimeout setelah 1 menit (60000 milidetik)
-    const timeoutId = setTimeout(jalankanTimeout, 60000);
-
-    // Membersihkan timer saat komponen unmount
-    return () => {
-      clearTimeout(timeoutId);
-      clearTimeout(timerId);
-    };
-  }, []);
-
-  const [loading, setLoading] = useState(false);
-  const handlePayment = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch("/midtrans", {
-        method: "POST",
-        headers: {
-          accept: "application/json",
-          "content-type": "application/json",
-          authorization:
-            "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6",
-        },
-        body: JSON.stringify({
-          transaction_details: {
-            order_id: reservation?.id,
-            gross_amount: reservation?.totalPrice,
-          },
-          customer_details: {
-            first_name: reservation.guestName,
-            last_name: "",
-            email: reservation.guestEmail,
-            phone: "081223323423",
-          },
-          credit_card: { secure: true },
-        }),
-      });
-
-      const data = await response.json();
-      window.location.href = data.redirect_url;
-    } catch (error) {
-      console.error("Terjadi kesalahan:", error);
-    } finally {
-      setLoading(false);
+    if (expire) {
+      deleteReservasi();
     }
-  };
+  }, [reservation.startDate]);
 
-  const onPayment = () => {
-    createPayment({
-      title: listing.title,
-      userName: reservation?.guestName ?? "",
-      images: [listing.imageSrc[0]?.img ?? ""],
-      userEmail: reservation?.guestEmail ?? "",
-      price: reservation?.totalPrice ?? 0,
-      rooms: reservation?.rooms ?? 0,
-      reservationsId: reservation?.id ?? "",
+  const router = useRouter();
+  const { mutate: midtrans, isLoading: loading } =
+    api.user.createMidtrans.useMutation({
+      onSuccess: (e) => {
+        router.push(e);
+      },
+    });
+  const handlePayment = () => {
+    midtrans({
+      name: reservation.guestName ?? "",
+      id: reservation.id ?? "",
+      email: reservation.guestEmail ?? "",
+      totalPrice: reservation.totalPrice ?? 0,
     });
   };
+
   return (
     <Card className="group relative overflow-hidden rounded-xl border shadow-sm sm:col-span-4 xl:col-span-2">
       <CardContent className="pb-0 pt-6">
@@ -262,29 +190,22 @@ const ListingPayment: React.FC<ListingCardProps> = ({
           <Button
             disabled={isLoading}
             onClick={deleteReservasi}
+            variant={"outline"}
             title="Delete Reservation"
-            className=" bg-rose-600 text-white hover:bg-rose-500"
+            className="border border-rose-600 text-rose-600 hover:bg-rose-600 hover:text-white"
           >
             <TrashIcon className="mr-2 h-4 w-4" />
             Delete
           </Button>
           <Button
-            className="w-full hover:bg-rose-600/25"
-            variant={"outline"}
-            onClick={onPayment}
+            className="w-full bg-rose-600 text-secondary hover:bg-rose-500"
+            disabled={loading}
+            onClick={handlePayment}
           >
             <Banknote className="mr-2 h-4 w-4" />
             pay
           </Button>
         </div>
-        <Button
-          disabled={loading}
-          className="w-full"
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          onClick={handlePayment}
-        >
-          Pay with midtrans
-        </Button>
       </CardFooter>
     </Card>
   );

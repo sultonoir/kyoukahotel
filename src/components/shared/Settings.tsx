@@ -26,7 +26,7 @@ interface SettingsProps {
 }
 
 const Settings: React.FC<SettingsProps> = ({ data }) => {
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState(data.image);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
@@ -43,7 +43,7 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
     user({
       id: data.id,
       name,
-      image,
+      image: image ?? "",
       email,
     });
   };
@@ -127,7 +127,7 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
                     <X size={20} />
                   </button>
                 </div>
-                <AvatarCom src={data.image || image} width={150} height={150} />
+                <AvatarCom src={image} width={150} height={150} />
               </div>
             </div>
             <UploadButton

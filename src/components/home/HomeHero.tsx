@@ -10,9 +10,14 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { api } from "@/utils/api";
 import { play } from "../types";
 import Search from "../shared/Search";
+import Loader from "../shared/Loader";
 
 const HomeHero = () => {
-  const { data: listings } = api.user.getListings.useQuery();
+  const { data: listings, isLoading } = api.user.getListings.useQuery();
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   return (
     <Container>
@@ -57,7 +62,7 @@ const HomeHero = () => {
                   </h1>
                   <Link
                     href={`/rooms/${listing.title}`}
-                    className="w-[110px] rounded-lg bg-rose-500 px-2 py-1 text-white"
+                    className="rounded-lg bg-rose-500 px-2 py-1 text-white"
                   >
                     View Rooms
                   </Link>

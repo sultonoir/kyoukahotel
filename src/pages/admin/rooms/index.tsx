@@ -3,11 +3,15 @@ import ListingCard from "@/components/listing/ListingCard";
 import RentModal from "@/components/modal/RentModal";
 import Container from "@/components/shared/Container";
 import EmptyState from "@/components/shared/EmptyState";
+import Loader from "@/components/shared/Loader";
 import { api } from "@/utils/api";
 import React from "react";
 
 const index = () => {
-  const { data: user } = api.user.getUser.useQuery();
+  const { data: user, isLoading } = api.user.getUser.useQuery();
+  if (isLoading) {
+    return <Loader />;
+  }
   if (!user || user.role !== "admin") {
     return (
       <EmptyState

@@ -4,8 +4,11 @@ import React from "react";
 import RattingsClient from "../../../components/columrating/RattingsClient";
 
 const index = () => {
-  const { data } = api.user.getUser.useQuery();
+  const { data, isLoading } = api.user.getUser.useQuery();
 
+  if (isLoading) {
+    return <Loader />;
+  }
   if (!data) {
     return <Loader />;
   }

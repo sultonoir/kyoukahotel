@@ -7,7 +7,7 @@ interface AvatarMenu {
 const AvatarMenu: React.FC<AvatarMenu> = ({ src }) => {
   return (
     <Avatar>
-      <AvatarImage src={src || `/placeholder.jpg`} />
+      <AvatarImage src={src || `/placeholder.jpg`} className="object-cover" />
       <AvatarFallback>CN</AvatarFallback>
     </Avatar>
   );

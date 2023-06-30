@@ -7,12 +7,13 @@ import React from "react";
 
 const index = () => {
   const { data, isLoading } = api.listings.getListings.useQuery();
-  if (!data) {
-    return <Loader />;
-  }
   if (isLoading) {
     return <Loader />;
   }
+  if (!data) {
+    return <Loader />;
+  }
+
   return (
     <>
       <Navbar />

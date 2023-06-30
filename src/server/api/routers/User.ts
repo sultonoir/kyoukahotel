@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -232,6 +233,19 @@ export const UserRouter = createTRPCRouter({
         data: {
           roomCount: {
             increment: input.rooms,
+          },
+        },
+        include: {
+          reservations: {
+            include: {
+              listing: {
+                include: {
+                  imageSrc: true,
+                  fasilitas: true,
+                  user: true,
+                },
+              },
+            },
           },
         },
       });
@@ -641,4 +655,42 @@ export const UserRouter = createTRPCRouter({
     });
     return banner;
   }),
+  createMidtrans: publicProcedure
+    .input(
+      z.object({
+        totalPrice: z.number(),
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      const response = await fetch(
+        "https://app.sandbox.midtrans.com/snap/v1/transactions",
+        {
+          method: "POST",
+          headers: {
+            accept: "application/json",
+            "content-type": "application/json",
+            authorization:
+              "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6",
+          },
+          body: JSON.stringify({
+            transaction_details: {
+              order_id: input.id,
+              gross_amount: input.totalPrice,
+            },
+            customer_details: {
+              first_name: input.name,
+              last_name: "",
+              email: input.email,
+              phone: "081223323423",
+            },
+            credit_card: { secure: true },
+          }),
+        }
+      );
+      const data = await response.json();
+      return data.redirect_url;
+    }),
 });

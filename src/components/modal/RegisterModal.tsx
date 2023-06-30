@@ -26,6 +26,8 @@ const RegisterModal = () => {
       setName("");
       setPassword("");
       setEmail("");
+      loginModal.onOpen();
+      registerModal.onClose();
       void ctx.example.getAll.invalidate();
       toast.success("Account created");
     },
@@ -153,7 +155,7 @@ const RegisterModal = () => {
       </CardContent>
       <CardFooter>
         <Button
-          className="w-full bg-rose-600 text-white"
+          className="w-full bg-rose-600 text-white hover:bg-rose-500"
           onClick={() =>
             mutate({ name: name, email: email, password: password })
           }

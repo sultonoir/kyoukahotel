@@ -1,6 +1,5 @@
 "use client";
 import Navbar from "@/components/navbar/Navbar";
-import { shootFireworks } from "@/lib/succes";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
 import Link from "next/link";
@@ -8,10 +7,6 @@ import { useRouter } from "next/navigation";
 import React from "react";
 
 const SuccessClient = () => {
-  React.useEffect(() => {
-    shootFireworks();
-  }, []);
-
   const router = useRouter();
 
   return (

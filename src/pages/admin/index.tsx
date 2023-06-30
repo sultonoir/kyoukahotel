@@ -8,8 +8,8 @@ import AuthShowcase from "@/components/form/AuthShowcase";
 import Loader from "@/components/shared/Loader";
 
 const index = () => {
-  const { status, data } = api.user.getUser.useQuery();
-  if (status === "loading") {
+  const { isLoading, data } = api.user.getUser.useQuery();
+  if (isLoading) {
     return <Loader />;
   }
   if (!data) {
