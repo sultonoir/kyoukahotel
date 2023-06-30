@@ -134,7 +134,10 @@ const LoginModal = () => {
             Please wait
           </Button>
         ) : (
-          <Button className="w-full bg-rose-600 text-white" onClick={onSumbit}>
+          <Button
+            className="w-full bg-rose-600 text-white hover:bg-rose-500"
+            onClick={onSumbit}
+          >
             Sumbit
           </Button>
         )}

@@ -13,20 +13,23 @@ const index = () => {
     return <Loader />;
   }
 
+  if (!data) {
+    return <EmptyState />;
+  }
+
   return (
     <>
       <Navbar />
       <div className="pt-20">
         <Container>
-          {data &&
-            data.reservations.filter((res) => res.status === "pending")
-              .length === 0 && (
-              <EmptyState
-                title="You not have reservations"
-                subtitle="Make reservations first"
-                rentmodal
-              />
-            )}
+          {data.reservations.filter((res) => res.status === "pending")
+            .length === 0 && (
+            <EmptyState
+              title="You not have reservations"
+              subtitle="Make reservations first"
+              rentmodal
+            />
+          )}
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
             {data &&
               data.reservations

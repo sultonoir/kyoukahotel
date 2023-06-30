@@ -1,13 +1,22 @@
 "use client";
 import Navbar from "@/components/navbar/Navbar";
+import EmptyState from "@/components/shared/EmptyState";
+import Loader from "@/components/shared/Loader";
+import { api } from "@/utils/api";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React from "react";
 
 const SuccessClient = () => {
   const router = useRouter();
+  const { data, isLoading } = api.user.getUser.useQuery();
+  if (isLoading) {
+    return <Loader />;
+  }
+  if (!data) {
+    return <EmptyState />;
+  }
 
   return (
     <div>
@@ -32,13 +41,15 @@ const SuccessClient = () => {
               />
             </span>
 
-            <h1 className="mb-2 text-2xl font-bold">Payment Successful!</h1>
+            <h1 className="mb-2 text-2xl font-bold">
+              {data.name} Payment Successful!
+            </h1>
             <p className="text-center text-gray-600">
               Thank you for your payment. Your transaction has been successfully
               processed.
             </p>
             <p className="text-center text-primary">
-              Generate invoice for Checkin
+              <strong>use {data.email} for Check-In</strong>
             </p>
             <div>
               <button
@@ -47,12 +58,6 @@ const SuccessClient = () => {
               >
                 Back to home
               </button>
-              <Link
-                className="mt-4 rounded-md border border-rose-500 px-4 py-2 text-rose-500"
-                href="/history"
-              >
-                Invoice
-              </Link>
             </div>
           </div>
         </Transition>
