@@ -12,6 +12,7 @@ const SuccessClient = () => {
   const router = useRouter();
   const params = useSearchParams();
   const orderID = params?.get("order_id");
+  const transaction_status = params?.get("transaction_status");
   const { data, isLoading } = api.user.getUser.useQuery();
   const { mutate } = api.user.getInvoice.useMutation({});
   useEffect(() => {

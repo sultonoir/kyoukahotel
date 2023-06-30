@@ -65,7 +65,7 @@ const Notifications: React.FC<NotificationsProps> = ({
         </Button>
         {notifi.map((notif) => {
           return (
-            <div key={notif.id} className="mt-2 flex gap-2">
+            <div key={notif.id} className="mt-2 flex gap-2 overflow-y-auto">
               <AvatarMenu src={notif.guestImage} />
               <div className="flex flex-col">
                 <h3 className="font-semibold">{notif.guestName}</h3>

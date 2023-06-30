@@ -40,7 +40,14 @@ const FormSchema = z.object({
 });
 
 const AdminDashboard: React.FC<reservations> = ({ reservation }) => {
-  const [item, setItem] = useState(reservation);
+  const notFailed = reservation.filter(
+    (res) =>
+      res.status !== "deny" &&
+      res.status !== "expire" &&
+      res.status !== "pending" &&
+      res.status !== "failed"
+  );
+  const [item, setItem] = useState(notFailed);
   const [show, setShow] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -70,7 +77,13 @@ const AdminDashboard: React.FC<reservations> = ({ reservation }) => {
     const reservationFilter = reservation.filter((item) => {
       const date = new Date(item.created);
       const formatDate = format(date, "PPP");
-      return formatDate === tanggalFilter;
+      return (
+        item.status !== "deny" &&
+        item.status !== "expire" &&
+        item.status !== "pending" &&
+        item.status !== "failed" &&
+        formatDate === tanggalFilter
+      );
     });
     setItem(reservationFilter);
     setShow(true);
@@ -81,7 +94,13 @@ const AdminDashboard: React.FC<reservations> = ({ reservation }) => {
     const formatDateNow = format(dateNow, "PPP");
     const createdNow = new Date(e.created);
     const formatCreatedNow = format(createdNow, "PPP");
-    return formatDateNow === formatCreatedNow;
+    return (
+      e.status !== "deny" &&
+      e.status !== "expire" &&
+      e.status !== "pending" &&
+      e.status !== "failed" &&
+      formatDateNow === formatCreatedNow
+    );
   });
 
   const allPrice = totalAllPrice(reservationNow);

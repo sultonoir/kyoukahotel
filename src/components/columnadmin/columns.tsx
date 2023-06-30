@@ -115,10 +115,11 @@ export const columns: ColumnDef<Payment>[] = [
     header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
       const status = row.getValue("status");
+      console.log(status);
       if (status === "success") {
         return (
           <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
-            success
+            Success
           </p>
         );
       } else if (status === "completed") {
@@ -136,13 +137,31 @@ export const columns: ColumnDef<Payment>[] = [
       } else if (status === "capture") {
         return (
           <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
-            success
+            Success
           </p>
         );
       } else if (status === "pending") {
         return (
           <p className="rounded-lg bg-secondary px-2 py-1 text-center text-primary">
             Pending
+          </p>
+        );
+      } else if (status === "settlement") {
+        return (
+          <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
+            Success
+          </p>
+        );
+      } else if (status === "deny") {
+        return (
+          <p className="rounded-lg bg-rose-600 px-2 py-1 text-center text-secondary">
+            Failed
+          </p>
+        );
+      } else if (status === "expire") {
+        return (
+          <p className="rounded-lg bg-rose-600 px-2 py-1 text-center text-secondary">
+            Failed
           </p>
         );
       }
