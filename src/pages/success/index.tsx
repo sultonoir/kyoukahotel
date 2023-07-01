@@ -6,25 +6,24 @@ import { api } from "@/utils/api";
 import { Transition } from "@headlessui/react";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React from "react";
 
 const SuccessClient = () => {
   const router = useRouter();
   const params = useSearchParams();
   const orderID = params?.get("order_id");
   const transaction_status = params?.get("transaction_status");
-  const { data, isLoading } = api.user.getUser.useQuery();
-  const { mutate } = api.user.getInvoice.useMutation({});
-  useEffect(() => {
-    mutate({
+  const { data: reservations, isLoading: loading } =
+    api.user.getInvoice.useQuery({
       reservationsId: orderID ?? "",
+      status: transaction_status ?? "",
     });
-  }, [mutate, orderID]);
 
-  if (isLoading) {
+  if (loading) {
     return <Loader />;
   }
-  if (!data) {
+
+  if (!reservations) {
     return <EmptyState />;
   }
 
@@ -52,14 +51,14 @@ const SuccessClient = () => {
             </span>
 
             <h1 className="mb-2 text-2xl font-bold">
-              {data.name} Payment Successful!
+              {reservations.guestEmail} Payment Successful!
             </h1>
             <p className="text-center text-gray-600">
               Thank you for your payment. Your transaction has been successfully
               processed.
             </p>
             <p className="text-center text-primary">
-              <strong>use {data.email} for Check-In</strong>
+              <strong>use {reservations.guestEmail} for Check-In</strong>
             </p>
             <div>
               <button

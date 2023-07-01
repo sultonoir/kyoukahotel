@@ -115,7 +115,6 @@ export const columns: ColumnDef<Payment>[] = [
     header: () => <div className="text-center">Status</div>,
     cell: ({ row }) => {
       const status = row.getValue("status");
-      console.log(status);
       if (status === "success") {
         return (
           <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">

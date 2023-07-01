@@ -22,11 +22,6 @@ import React, { useState } from "react";
 import { signOut } from "next-auth/react";
 
 import { api } from "@/utils/api";
-import Notifications from "../shared/Notifications";
-import {
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-} from "@radix-ui/react-dropdown-menu";
 import AvatarMenu from "../navbar/AvatarMenu";
 import { useRouter } from "next/navigation";
 import {

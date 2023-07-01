@@ -45,7 +45,11 @@ export const UserRouter = createTRPCRouter({
             user: true,
           },
         },
-        notifi: true,
+        notifi: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
         banner: {
           orderBy: {
             createdAt: "asc",
@@ -315,33 +319,29 @@ export const UserRouter = createTRPCRouter({
     .input(
       z.object({
         reservationsId: z.string(),
+        status: z.string(),
       })
     )
-    .mutation(async ({ ctx, input }) => {
-      const invoicesPromise = stripe.invoices.search({
-        query: `total>999 AND metadata['email']:'${
-          ctx.session?.user.email ?? ""
-        }' AND metadata['reservationsId']:'${input.reservationsId ?? ""}'`,
-      });
-
-      await ctx.prisma.reservation.update({
+    .query(async ({ ctx, input }) => {
+      const resrv = await ctx.prisma.reservation.findUnique({
         where: {
           id: input.reservationsId,
         },
+      });
+
+      await ctx.prisma.listing.update({
+        where: {
+          id: resrv?.listingId,
+        },
         data: {
-          status: "success",
-          listing: {
+          user: {
             update: {
-              user: {
-                update: {
-                  hasNotifi: true,
-                  notifi: {
-                    create: {
-                      message: "Reservations success",
-                      guestName: ctx.session?.user.name,
-                      guestImage: ctx.session?.user.image,
-                    },
-                  },
+              hasNotifi: true,
+              notifi: {
+                create: {
+                  message: "Reservations success",
+                  guestName: ctx.session?.user.name,
+                  guestImage: ctx.session?.user.image,
                 },
               },
             },
@@ -349,12 +349,16 @@ export const UserRouter = createTRPCRouter({
         },
       });
 
-      const invoicesResult = await invoicesPromise;
-      const customers = invoicesResult.data;
-      const [custom] = customers.map((cus) => ({ ...cus }));
+      const res = await ctx.prisma.reservation.update({
+        where: {
+          id: input.reservationsId,
+        },
+        data: {
+          status: input.status,
+        },
+      });
 
-      return custom?.hosted_invoice_url;
-      // return customers;
+      return res;
     }),
   getNotifications: publicProcedure
     .input(
