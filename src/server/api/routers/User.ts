@@ -697,4 +697,21 @@ export const UserRouter = createTRPCRouter({
       const data = await response.json();
       return data.redirect_url;
     }),
+  getUserNotifi: publicProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const userNotifi = await ctx.prisma.user.findUnique({
+        where: {
+          email: input.email,
+        },
+        include: {
+          notifi: true,
+        },
+      });
+      return userNotifi;
+    }),
 });

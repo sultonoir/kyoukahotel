@@ -34,8 +34,15 @@ import {
 } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { toast } from "react-hot-toast";
+import { type Notifi, type User } from "@prisma/client";
 
-const AdminProfile = () => {
+interface Props {
+  user: User & {
+    notifi: Notifi[];
+  };
+}
+
+const AdminProfile: React.FC<Props> = () => {
   const router = useRouter();
   const { data } = api.user.getUser.useQuery();
   const [notifi, setNotifi] = useState(data?.notifi);
