@@ -5,10 +5,7 @@ import Container from "../shared/Container";
 import { api } from "@/utils/api";
 
 const AdminNavbar = () => {
-  const { data, isLoading } = api.user.getUserNotifi.useQuery();
-  if (isLoading) {
-    return null;
-  }
+  const { data } = api.user.getUserNotifi.useQuery();
   if (!data) {
     return null;
   }

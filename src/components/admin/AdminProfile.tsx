@@ -43,6 +43,7 @@ interface Props {
 }
 
 const AdminProfile: React.FC<Props> = ({ user }) => {
+  console.log(user);
   const router = useRouter();
   const [notifi, setNotifi] = useState(user.notifi);
   const [notif, setNotif] = useState(user.hasNotifi);
