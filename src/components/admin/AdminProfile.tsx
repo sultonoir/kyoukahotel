@@ -137,17 +137,18 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
             <p>Delet all notofications</p>
           )}
         </Button>
-        {notifi?.map((notif) => {
-          return (
-            <div key={notif.id} className="mt-2 flex gap-2 overflow-y-auto">
-              <AvatarMenu src={notif.guestImage} />
-              <div className="flex flex-col">
-                <h3 className="font-semibold">{notif.guestName}</h3>
-                <p className="">{notif.message}</p>
+        {user.notifi &&
+          notifi?.map((notif) => {
+            return (
+              <div key={notif.id} className="mt-2 flex gap-2 overflow-y-auto">
+                <AvatarMenu src={notif.guestImage} />
+                <div className="flex flex-col">
+                  <h3 className="font-semibold">{notif.guestName}</h3>
+                  <p className="">{notif.message}</p>
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
       </SheetContent>
     </Sheet>
   );
