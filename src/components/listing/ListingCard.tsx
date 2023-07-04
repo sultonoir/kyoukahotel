@@ -107,19 +107,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
     }
   }, [listing.discount, listing.price]);
 
-  const { mutate: invoice, isLoading: loading } =
-    api.user.getInvoice.useMutation({
-      onSuccess: (e) => {
-        router.push(e ?? "");
-      },
-    });
-
-  const getInvoice = () => {
-    invoice({
-      reservationsId: reservation?.id ?? "",
-    });
-  };
-
   const { mutate: onlyInvoice, isLoading: load } =
     api.user.onlyInvoice.useMutation({
       onSuccess: (e) => {

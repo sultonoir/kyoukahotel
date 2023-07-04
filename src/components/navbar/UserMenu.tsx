@@ -103,6 +103,14 @@ const UserMenu = () => {
             <DropdownMenuContent>
               <DropdownMenuLabel>{data.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <SheetTrigger onClick={getNotifications}>
+                  <div className="flex cursor-pointer gap-2">
+                    <Bell size={20} />
+                    Notifications
+                  </div>
+                </SheetTrigger>
+              </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex cursor-pointer md:hidden"
                 onClick={() => router.push("/facilities")}
@@ -123,14 +131,6 @@ const UserMenu = () => {
               >
                 <Banknote className="mr-2" />
                 Paymet
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <SheetTrigger onClick={getNotifications}>
-                  <div className="flex cursor-pointer gap-2">
-                    <Bell size={20} />
-                    Notifications
-                  </div>
-                </SheetTrigger>
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="cursor-pointer"
