@@ -17,7 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-import React, { useState } from "react";
+import React from "react";
 
 import { signOut } from "next-auth/react";
 
@@ -45,7 +45,6 @@ interface Props {
 const AdminProfile: React.FC<Props> = ({ user }) => {
   console.log(user);
   const router = useRouter();
-  const [notifi, setNotifi] = useState(user.notifi);
 
   const { mutate } = api.user.getNotifications.useMutation();
 
@@ -57,9 +56,8 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
 
   const { mutate: delet, isLoading } = api.user.deleteNotifications.useMutation(
     {
-      onSuccess: (e) => {
+      onSuccess: () => {
         toast.success("Notifications Deleted");
-        setNotifi(e.notifi);
       },
     }
   );
@@ -137,18 +135,17 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
             <p>Delet all notofications</p>
           )}
         </Button>
-        {user.notifi &&
-          notifi?.map((notif) => {
-            return (
-              <div key={notif.id} className="mt-2 flex gap-2 overflow-y-auto">
-                <AvatarMenu src={notif.guestImage} />
-                <div className="flex flex-col">
-                  <h3 className="font-semibold">{notif.guestName}</h3>
-                  <p className="">{notif.message}</p>
-                </div>
+        {user.notifi.map((notif) => {
+          return (
+            <div key={notif.id} className="mt-2 flex gap-2 overflow-y-auto">
+              <AvatarMenu src={notif.guestImage} />
+              <div className="flex flex-col">
+                <h3 className="font-semibold">{notif.guestName}</h3>
+                <p className="">{notif.message}</p>
               </div>
-            );
-          })}
+            </div>
+          );
+        })}
       </SheetContent>
     </Sheet>
   );
