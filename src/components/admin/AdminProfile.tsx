@@ -46,13 +46,8 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
   console.log(user);
   const router = useRouter();
   const [notifi, setNotifi] = useState(user.notifi);
-  const [notif, setNotif] = useState(user.hasNotifi);
 
-  const { mutate } = api.user.getNotifications.useMutation({
-    onSuccess: (e) => {
-      setNotif(e.hasNotifi);
-    },
-  });
+  const { mutate } = api.user.getNotifications.useMutation();
 
   const getNotifications = () => {
     mutate({
@@ -86,7 +81,7 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
                 <div className="hidden md:flex">
                   <AvatarMenu src={user.image} />
                 </div>
-                {notif && (
+                {user.hasNotifi && (
                   <div className="absolute -right-[1.25rem] -top-[24px] animate-pulse text-rose-500">
                     <Dot size={70} />
                   </div>
