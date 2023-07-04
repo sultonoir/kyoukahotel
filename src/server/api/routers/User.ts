@@ -11,6 +11,7 @@ import { z } from "zod";
 import { prisma } from "@/server/db";
 import bcrypt from "bcrypt";
 import { stripe } from "@/lib/stripe";
+import { pusherServer } from "@/lib/pusher";
 
 export const UserRouter = createTRPCRouter({
   getAdmin: publicProcedure.query(async ({ ctx }) => {
@@ -327,25 +328,31 @@ export const UserRouter = createTRPCRouter({
         where: {
           id: input.reservationsId,
         },
-      });
-
-      await ctx.prisma.listing.update({
-        where: {
-          id: resrv?.listingId,
-        },
-        data: {
-          user: {
-            update: {
-              hasNotifi: true,
-              notifi: {
-                create: {
-                  message: "Reservations success",
-                  guestName: ctx.session?.user.name,
-                  guestImage: ctx.session?.user.image,
-                },
-              },
+        include: {
+          listing: {
+            include: {
+              user: true,
             },
           },
+        },
+      });
+
+      const user = await ctx.prisma.user.update({
+        where: {
+          id: resrv?.listing.userId ?? "",
+        },
+        data: {
+          hasNotifi: true,
+          notifi: {
+            create: {
+              message: "Reservations success",
+              guestName: ctx.session?.user.name,
+              guestImage: ctx.session?.user.image,
+            },
+          },
+        },
+        include: {
+          notifi: true,
         },
       });
 
@@ -357,7 +364,7 @@ export const UserRouter = createTRPCRouter({
           status: input.status,
         },
       });
-
+      await pusherServer.trigger("get", "newN", user);
       return res;
     }),
   getNotifications: publicProcedure

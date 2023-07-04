@@ -65,7 +65,6 @@ const ListingCard: React.FC<ListingCardProps> = ({
   listing,
   admin,
   reservation,
-  pending,
   completed,
   rating,
 }) => {

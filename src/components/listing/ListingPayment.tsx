@@ -28,18 +28,13 @@ import {
 } from "@/components/ui/card";
 import Link from "next/link";
 import BluredImage from "../shared/BluredImage";
-import {
-  Banknote,
-  BedDouble,
-  ChevronLeft,
-  TrashIcon,
-  User2Icon,
-} from "lucide-react";
+import { Banknote, ChevronLeft, TrashIcon } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import { add, format } from "date-fns";
 import { play } from "../types";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { DoorClosedIcon } from "lucide-react";
 
 interface ListingCardProps {
   listing: Listing & {
@@ -161,24 +156,9 @@ const ListingPayment: React.FC<ListingCardProps> = ({
             {format(reservation.startDate, "PP")} -
             {format(reservation.endDate, "PP")}
           </p>
-          <p className="text-neutral-500">
-            {reservation.rooms} <span>Rooms</span>
-          </p>
-        </div>
-        <div className="flex items-center gap-5">
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2">
-              <BedDouble size={20} className="text-rose-500" />
-              <p>{listing.bed}</p>
-            </div>
-            <p className="capitalize">bed</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2">
-              <User2Icon size={20} className="text-rose-500" />
-              <p>{listing.guestCount}</p>
-            </div>
-            <p className="capitalize">guest max</p>
+          <div className="flex items-center gap-2">
+            <DoorClosedIcon size={20} className="text-rose-500" />
+            <p>{reservation.rooms} Rooms Reserved</p>
           </div>
         </div>
         <CardDescription className="text-lg text-primary">

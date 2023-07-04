@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {
   DropdownMenu,
@@ -17,7 +21,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { signOut } from "next-auth/react";
 
@@ -35,6 +39,7 @@ import {
 import { Button } from "../ui/button";
 import { toast } from "react-hot-toast";
 import { type Notifi, type User } from "@prisma/client";
+import { pusherClient } from "@/lib/pusher";
 
 interface Props {
   user: User & {
@@ -47,6 +52,29 @@ const AdminProfile: React.FC<Props> = () => {
   const { data } = api.user.getUser.useQuery();
   const [notifi, setNotifi] = useState(data?.notifi);
   const [notif, setNotif] = useState(data?.hasNotifi);
+  useEffect(() => {
+    if (!("Notification" in window)) {
+      console.log("Browser tidak mendukung notifikasi desktop");
+    } else {
+      void Notification.requestPermission();
+    }
+
+    const showNotification = (message: string) => {
+      new Notification(message);
+    };
+
+    const handleNewReservation = (data: any) => {
+      setNotif(data.hasNotifi);
+      setNotifi(data.notifi);
+      showNotification("Pesan Baru: Reservasi");
+    };
+    pusherClient.subscribe("get");
+    pusherClient.bind("newN", handleNewReservation);
+    return () => {
+      pusherClient.unsubscribe("get");
+      pusherClient.unbind("newN", handleNewReservation);
+    };
+  }, []);
   if (!data) {
     return null;
   }

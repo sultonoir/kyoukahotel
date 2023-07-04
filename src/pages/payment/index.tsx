@@ -7,47 +7,40 @@ import { api } from "@/utils/api";
 import React from "react";
 
 const index = () => {
-  const { data, isLoading } = api.user.getUser.useQuery();
-
-  if (!data) {
-    return <EmptyState />;
-  }
-
-  const pending = data.reservations.filter((res) => res.status === "pending");
+  const { data, isLoading } = api.payment.getReservationsPending.useQuery();
 
   if (isLoading) {
     return <Loader />;
   }
 
-  if (pending.length === 0) {
-    return (
-      <EmptyState
-        title="You have no payment"
-        subtitle="Back to home"
-        showReset
-      />
-    );
+  if (!data) {
+    return <EmptyState />;
   }
 
   return (
     <>
       <Navbar />
-      <div className="pt-20">
-        <Container>
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
-            {data &&
-              data.reservations
-                .filter((res) => res.status === "pending")
-                .map((listing) => (
-                  <ListingPayment
-                    key={listing.id}
-                    listing={listing.listing}
-                    reservation={listing}
-                  />
-                ))}
-          </div>
-        </Container>
-      </div>
+      {data.length !== 0 ? (
+        <div className="pt-20">
+          <Container>
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
+              {data.map((reserv) => (
+                <ListingPayment
+                  key={reserv.id}
+                  listing={reserv.listing}
+                  reservation={reserv}
+                />
+              ))}
+            </div>
+          </Container>
+        </div>
+      ) : (
+        <EmptyState
+          title="You have no payments"
+          subtitle="choose a room first"
+          rentmodal
+        />
+      )}
     </>
   );
 };
