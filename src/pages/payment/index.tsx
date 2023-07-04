@@ -9,15 +9,15 @@ import React from "react";
 const index = () => {
   const { data, isLoading } = api.user.getUser.useQuery();
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
   if (!data) {
     return <EmptyState />;
   }
 
   const pending = data.reservations.filter((res) => res.status === "pending");
+
+  if (isLoading) {
+    return <Loader />;
+  }
 
   if (pending.length === 0) {
     return (
