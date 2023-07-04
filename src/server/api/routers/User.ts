@@ -375,13 +375,6 @@ export const UserRouter = createTRPCRouter({
           hasNotifi: false,
         },
         include: {
-          listing: {
-            include: {
-              imageSrc: true,
-              fasilitas: true,
-            },
-          },
-          reservations: true,
           notifi: {
             orderBy: {
               createdAt: "asc",
@@ -703,7 +696,11 @@ export const UserRouter = createTRPCRouter({
         email: ctx.session?.user.email as string,
       },
       include: {
-        notifi: true,
+        notifi: {
+          orderBy: {
+            createdAt: "asc",
+          },
+        },
       },
     });
     return userNotifi;
