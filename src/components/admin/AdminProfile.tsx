@@ -1,7 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import {
   DropdownMenu,
@@ -21,7 +17,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { signOut } from "next-auth/react";
 
@@ -39,7 +35,6 @@ import {
 import { Button } from "../ui/button";
 import { toast } from "react-hot-toast";
 import { type Notifi, type User } from "@prisma/client";
-import { pusherClient } from "@/lib/pusher";
 
 interface Props {
   user: User & {
@@ -47,37 +42,10 @@ interface Props {
   };
 }
 
-const AdminProfile: React.FC<Props> = () => {
+const AdminProfile: React.FC<Props> = ({ user }) => {
   const router = useRouter();
-  const { data } = api.user.getUser.useQuery();
-  const [notifi, setNotifi] = useState(data?.notifi);
-  const [notif, setNotif] = useState(data?.hasNotifi);
-  useEffect(() => {
-    if (!("Notification" in window)) {
-      console.log("Browser tidak mendukung notifikasi desktop");
-    } else {
-      void Notification.requestPermission();
-    }
-
-    const showNotification = (message: string) => {
-      new Notification(message);
-    };
-
-    const handleNewReservation = (data: any) => {
-      setNotif(data.hasNotifi);
-      setNotifi(data.notifi);
-      showNotification("Pesan Baru: Reservasi");
-    };
-    pusherClient.subscribe("get");
-    pusherClient.bind("newN", handleNewReservation);
-    return () => {
-      pusherClient.unsubscribe("get");
-      pusherClient.unbind("newN", handleNewReservation);
-    };
-  }, []);
-  if (!data) {
-    return null;
-  }
+  const [notifi, setNotifi] = useState(user.notifi);
+  const [notif, setNotif] = useState(user.hasNotifi);
 
   const { mutate } = api.user.getNotifications.useMutation({
     onSuccess: (e) => {
@@ -87,7 +55,7 @@ const AdminProfile: React.FC<Props> = () => {
 
   const getNotifications = () => {
     mutate({
-      id: data.email,
+      id: user.email,
     });
   };
 
@@ -102,20 +70,20 @@ const AdminProfile: React.FC<Props> = () => {
 
   const deletNotif = () => {
     delet({
-      userid: data.id ?? "",
+      userid: user.id ?? "",
     });
   };
 
   return (
     <Sheet>
       <DropdownMenu>
-        {data.role === "admin" && (
+        {user.role === "admin" && (
           <>
             <DropdownMenuTrigger asChild>
               <div className="relative flex cursor-pointer flex-row items-center gap-3 rounded-full border-[1px] border-neutral-200 p-3 transition hover:shadow-md md:px-2 md:py-1">
                 <Menu size={20} />
                 <div className="hidden md:flex">
-                  <AvatarMenu src={data.image} />
+                  <AvatarMenu src={user.image} />
                 </div>
                 {notif && (
                   <div className="absolute -right-[1.25rem] -top-[24px] animate-pulse text-rose-500">
@@ -125,7 +93,7 @@ const AdminProfile: React.FC<Props> = () => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel>{data.name}</DropdownMenuLabel>
+              <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <SheetTrigger onClick={getNotifications}>

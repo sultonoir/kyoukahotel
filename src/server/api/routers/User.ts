@@ -11,7 +11,6 @@ import { z } from "zod";
 import { prisma } from "@/server/db";
 import bcrypt from "bcrypt";
 import { stripe } from "@/lib/stripe";
-import { pusherServer } from "@/lib/pusher";
 
 export const UserRouter = createTRPCRouter({
   getAdmin: publicProcedure.query(async ({ ctx }) => {
@@ -328,31 +327,25 @@ export const UserRouter = createTRPCRouter({
         where: {
           id: input.reservationsId,
         },
-        include: {
-          listing: {
-            include: {
-              user: true,
-            },
-          },
-        },
       });
 
-      const user = await ctx.prisma.user.update({
+      await ctx.prisma.listing.update({
         where: {
-          id: resrv?.listing.userId ?? "",
+          id: resrv?.listingId,
         },
         data: {
-          hasNotifi: true,
-          notifi: {
-            create: {
-              message: "Reservations success",
-              guestName: ctx.session?.user.name,
-              guestImage: ctx.session?.user.image,
+          user: {
+            update: {
+              hasNotifi: true,
+              notifi: {
+                create: {
+                  message: "Reservations success",
+                  guestName: ctx.session?.user.name,
+                  guestImage: ctx.session?.user.image,
+                },
+              },
             },
           },
-        },
-        include: {
-          notifi: true,
         },
       });
 
@@ -364,7 +357,7 @@ export const UserRouter = createTRPCRouter({
           status: input.status,
         },
       });
-      await pusherServer.trigger("get", "newN", user);
+
       return res;
     }),
   getNotifications: publicProcedure
@@ -704,21 +697,15 @@ export const UserRouter = createTRPCRouter({
       const data = await response.json();
       return data.redirect_url;
     }),
-  getUserNotifi: publicProcedure
-    .input(
-      z.object({
-        email: z.string(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const userNotifi = await ctx.prisma.user.findUnique({
-        where: {
-          email: input.email,
-        },
-        include: {
-          notifi: true,
-        },
-      });
-      return userNotifi;
-    }),
+  getUserNotifi: publicProcedure.query(async ({ ctx }) => {
+    const userNotifi = await ctx.prisma.user.findUnique({
+      where: {
+        email: ctx.session?.user.email as string,
+      },
+      include: {
+        notifi: true,
+      },
+    });
+    return userNotifi;
+  }),
 });

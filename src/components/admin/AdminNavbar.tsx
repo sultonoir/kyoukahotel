@@ -3,13 +3,9 @@ import AdminMenu from "./AdminMenu";
 import AdminProfile from "./AdminProfile";
 import Container from "../shared/Container";
 import { api } from "@/utils/api";
-import { useSession } from "next-auth/react";
 
 const AdminNavbar = () => {
-  const { data: user } = useSession();
-  const { data, isLoading } = api.user.getUserNotifi.useQuery({
-    email: user?.user.email ?? "",
-  });
+  const { data, isLoading } = api.user.getUserNotifi.useQuery();
   if (isLoading) {
     return null;
   }
