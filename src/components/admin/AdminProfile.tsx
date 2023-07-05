@@ -15,6 +15,7 @@ import {
   Settings2Icon,
   Bell,
   Loader2,
+  UserPlus2,
 } from "lucide-react";
 
 import React from "react";
@@ -35,6 +36,7 @@ import {
 import { Button } from "../ui/button";
 import { toast } from "react-hot-toast";
 import { type Notifi, type User } from "@prisma/client";
+import useRegisterAdmin from "@/hooks/useRegisterAdmin";
 
 interface Props {
   user: User & {
@@ -43,7 +45,7 @@ interface Props {
 }
 
 const AdminProfile: React.FC<Props> = ({ user }) => {
-  console.log(user);
+  const register = useRegisterAdmin();
   const router = useRouter();
 
   const { mutate } = api.user.getNotifications.useMutation();
@@ -87,7 +89,9 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent>
-              <DropdownMenuLabel>{user.name}</DropdownMenuLabel>
+              <DropdownMenuLabel className="capitalize">
+                {user.name}
+              </DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <SheetTrigger onClick={getNotifications}>
@@ -104,6 +108,13 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
               >
                 <Settings2Icon size={20} />
                 Setting
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="flex cursor-pointer gap-2"
+                onClick={register.onOpen}
+              >
+                <UserPlus2 size={20} />
+                Register
               </DropdownMenuItem>
               <DropdownMenuItem
                 className="flex cursor-pointer gap-2"

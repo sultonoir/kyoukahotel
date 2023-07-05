@@ -705,4 +705,43 @@ export const UserRouter = createTRPCRouter({
     });
     return userNotifi;
   }),
+  createAdmin: publicProcedure
+    .input(
+      z.object({
+        name: z
+          .string()
+          .min(2, {
+            message: "name must be at least 2 characters",
+          })
+          .max(50),
+        password: z
+          .string()
+          .min(8, {
+            message: "password must be at least 8 characters",
+          })
+          .max(50),
+        email: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existingUser = await ctx.prisma.user.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+
+      if (existingUser) {
+        throw new Error("E-mail has been used.");
+      }
+      const hashedPassword = await bcrypt.hash(input.password, 10);
+      const register = await ctx.prisma.user.create({
+        data: {
+          name: input.name,
+          email: input.email,
+          hashedPassword,
+          role: "admin",
+        },
+      });
+      return register;
+    }),
 });
