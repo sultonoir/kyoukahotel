@@ -124,6 +124,7 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       guestName: user?.name ?? "",
       guestEmail: user?.email,
       guestImage: user?.image ?? "",
+      adminId: user?.adminId as string,
     });
   };
 
@@ -138,15 +139,17 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       guestName: user?.name ?? "",
       guestEmail: user?.email,
       guestImage: user?.image ?? "",
+      adminId: user?.adminId ?? "",
     });
   };
 
-  const onPayment = React.useCallback(() => {
-    if (discount) {
+  const onPayment = () => {
+    if (discount && discount > 0) {
       return onDiscount();
+    } else {
+      onReservasi();
     }
-    return onReservasi();
-  }, [discount]);
+  };
 
   return (
     <Card className="flex w-full flex-col items-center gap-5 p-4">

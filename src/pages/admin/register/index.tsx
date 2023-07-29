@@ -21,7 +21,7 @@ const RegisterModal = () => {
   const registerModal = useRegisterModal();
   const [userError, setUserError] = React.useState("");
   const ctx = api.useContext();
-  const { mutate, isLoading, error } = api.example.create.useMutation({
+  const { mutate, isLoading, error } = api.admin.createAdmin.useMutation({
     onSuccess: () => {
       setName("");
       setPassword("");
@@ -167,13 +167,7 @@ const RegisterModal = () => {
     </Card>
   );
 
-  return (
-    <Modal
-      body={body}
-      isOpen={registerModal.isOpen}
-      onClose={registerModal.onClose}
-    />
-  );
+  return <Modal body={body} isOpen={true} onClose={registerModal.onClose} />;
 };
 
 export default RegisterModal;

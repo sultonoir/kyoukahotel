@@ -16,24 +16,28 @@ import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
 import { Label } from "../ui/label";
 import ImagePromosiUpload from "../shared/ImagePromosiUpload";
+import { type Admin } from "@prisma/client";
+interface Props {
+  admin: Admin;
+}
 
-const BannerModal = () => {
+const BannerModal: React.FC<Props> = ({ admin }) => {
+  const ctx = api.useContext();
   const [title, setTitle] = useState("");
   const [image, setImage] = useState("");
 
-  const { mutate, isLoading } = api.user.createBanner.useMutation({
+  const { mutate, isLoading } = api.admin.createBanner.useMutation({
     onSuccess: () => {
       toast.success("Banner created");
+      void ctx.admin.getAdmin.invalidate();
     },
   });
-
-  const { data } = api.user.getUser.useQuery();
 
   const onsubmit = () => {
     mutate({
       image,
       title,
-      email: data?.email ?? "",
+      email: admin.email,
     });
   };
 

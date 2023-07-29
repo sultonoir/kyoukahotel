@@ -13,15 +13,7 @@ import bcrypt from "bcrypt";
 import { stripe } from "@/lib/stripe";
 
 export const UserRouter = createTRPCRouter({
-  getAdmin: publicProcedure.query(async ({ ctx }) => {
-    const admin = await ctx.prisma.user.findMany({
-      where: {
-        role: "admin",
-      },
-    });
-    return [admin];
-  }),
-  getUser: publicProcedure.query(async ({ ctx }) => {
+  getUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await prisma.user.findUnique({
       where: {
         email: ctx.session?.user.email as string,
@@ -33,26 +25,13 @@ export const UserRouter = createTRPCRouter({
               include: {
                 imageSrc: true,
                 fasilitas: true,
-                user: true,
               },
             },
-          },
-        },
-        listing: {
-          include: {
-            imageSrc: true,
-            fasilitas: true,
-            user: true,
           },
         },
         notifi: {
           orderBy: {
             createdAt: "desc",
-          },
-        },
-        banner: {
-          orderBy: {
-            createdAt: "asc",
           },
         },
         rating: {
@@ -64,8 +43,57 @@ export const UserRouter = createTRPCRouter({
     });
     return user;
   }),
+  getNotifications: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const admin = await ctx.prisma.user.update({
+        where: {
+          email: input.id,
+        },
+        data: {
+          hasNotifi: false,
+        },
+        include: {
+          notifi: {
+            orderBy: {
+              createdAt: "asc",
+            },
+          },
+        },
+      });
+      return admin;
+    }),
+  deleteNotifi: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const bannerdelet = await ctx.prisma.user.update({
+          where: {
+            email: ctx.session?.user.email ?? "",
+          },
+          data: {
+            notifi: {
+              deleteMany: {
+                adminId: input.id,
+              },
+            },
+          },
+        });
+        return bannerdelet;
+      } catch (error) {
+        throw new Error("error");
+      }
+    }),
 
-  create: publicProcedure
+  createUser: publicProcedure
     .input(
       z.object({
         name: z
@@ -84,6 +112,11 @@ export const UserRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const [admin] = await ctx.prisma.admin.findMany({
+        where: {
+          role: "Admin",
+        },
+      });
       const existingUser = await ctx.prisma.user.findUnique({
         where: {
           email: input.email,
@@ -99,6 +132,7 @@ export const UserRouter = createTRPCRouter({
           name: input.name,
           email: input.email,
           hashedPassword,
+          adminId: admin?.id as string,
         },
       });
       return register;
@@ -107,7 +141,7 @@ export const UserRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
-        description: z.string().min(2).max(1000),
+        description: z.string().min(2).max(2000),
         guestCount: z.number().min(1).max(10, {
           message: "max 10 guest",
         }),
@@ -119,6 +153,7 @@ export const UserRouter = createTRPCRouter({
         discount: z.number().min(0).max(100).optional(),
         imagePromosi: z.string(),
         userId: z.string(),
+        adminId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -135,12 +170,12 @@ export const UserRouter = createTRPCRouter({
           imageSrc: {
             create: input.image.map((item: string) => ({ img: item })),
           },
-          userId: input.userId,
           fasilitas: {
             create: input.fasilitas.map((item: string) => ({
               fasilitas: item,
             })),
           },
+          adminId: input.adminId,
         },
       });
       return listings;
@@ -153,7 +188,6 @@ export const UserRouter = createTRPCRouter({
             createdAt: "desc",
           },
         },
-        user: true,
         fasilitas: true,
         reservations: true,
       },
@@ -176,6 +210,7 @@ export const UserRouter = createTRPCRouter({
         guestName: z.string().optional(),
         guestImage: z.string().optional(),
         guestEmail: z.string().optional(),
+        adminId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -209,6 +244,7 @@ export const UserRouter = createTRPCRouter({
               guestImage: input.guestImage,
               status: "pending",
               title: input.title,
+              adminId: input.adminId,
             },
           },
         },
@@ -246,7 +282,6 @@ export const UserRouter = createTRPCRouter({
                 include: {
                   imageSrc: true,
                   fasilitas: true,
-                  user: true,
                 },
               },
             },
@@ -323,32 +358,6 @@ export const UserRouter = createTRPCRouter({
       })
     )
     .query(async ({ ctx, input }) => {
-      const resrv = await ctx.prisma.reservation.findUnique({
-        where: {
-          id: input.reservationsId,
-        },
-      });
-
-      await ctx.prisma.listing.update({
-        where: {
-          id: resrv?.listingId,
-        },
-        data: {
-          user: {
-            update: {
-              hasNotifi: true,
-              notifi: {
-                create: {
-                  message: "Reservations success",
-                  guestName: ctx.session?.user.name,
-                  guestImage: ctx.session?.user.image,
-                },
-              },
-            },
-          },
-        },
-      });
-
       const res = await ctx.prisma.reservation.update({
         where: {
           id: input.reservationsId,
@@ -359,66 +368,6 @@ export const UserRouter = createTRPCRouter({
       });
 
       return res;
-    }),
-  getNotifications: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const user = await ctx.prisma.user.update({
-        where: {
-          email: input.id,
-        },
-        data: {
-          hasNotifi: false,
-        },
-        include: {
-          notifi: {
-            orderBy: {
-              createdAt: "asc",
-            },
-          },
-        },
-      });
-      return user;
-    }),
-  deleteNotifications: publicProcedure
-    .input(
-      z.object({
-        userid: z.string(),
-        // id: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const delet = await ctx.prisma.user.update({
-        where: {
-          id: input.userid,
-        },
-        data: {
-          notifi: {
-            deleteMany: {
-              userId: input.userid,
-            },
-          },
-        },
-        include: {
-          listing: {
-            include: {
-              imageSrc: true,
-              fasilitas: true,
-            },
-          },
-          reservations: true,
-          notifi: {
-            orderBy: {
-              createdAt: "asc",
-            },
-          },
-        },
-      });
-      return delet;
     }),
   onlyInvoice: publicProcedure
     .input(
@@ -457,34 +406,34 @@ export const UserRouter = createTRPCRouter({
         },
         data: {
           status: "rattings",
-          listing: {
-            update: {
-              user: {
-                update: {
-                  hasNotifi: true,
-                  notifi: {
-                    create: {
-                      message: "Give rattings",
-                      guestName: input.name,
-                      guestImage: input.image,
-                      reservationsId: input.id,
-                      listingId: input.listingId,
-                    },
-                  },
-                  rating: {
-                    create: {
-                      guestName: input.name,
-                      guestImage: input.image,
-                      guestEmail: input.email,
-                      message: input.message,
-                      value: input.value,
-                      reservationId: input.id,
-                    },
-                  },
-                },
-              },
-            },
-          },
+          // listing: {
+          //   update: {
+          //     user: {
+          //       update: {
+          //         hasNotifi: true,
+          //         notifi: {
+          //           create: {
+          //             message: "Give rattings",
+          //             guestName: input.name,
+          //             guestImage: input.image,
+          //             reservationsId: input.id,
+          //             listingId: input.listingId,
+          //           },
+          //         },
+          //         rating: {
+          //           create: {
+          //             guestName: input.name,
+          //             guestImage: input.image,
+          //             guestEmail: input.email,
+          //             message: input.message,
+          //             value: input.value,
+          //             reservationId: input.id,
+          //           },
+          //         },
+          //       },
+          //     },
+          //   },
+          // },
         },
       });
       return rattings;
@@ -539,90 +488,6 @@ export const UserRouter = createTRPCRouter({
         },
       });
       return password;
-    }),
-  createUser: publicProcedure
-    .input(
-      z.object({
-        name: z
-          .string()
-          .min(2, {
-            message: "name must be at least 2 characters",
-          })
-          .max(50),
-        userId: z.string().min(2).max(50),
-        email: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const existingUser = await ctx.prisma.user.findUnique({
-        where: {
-          email: input.email,
-        },
-      });
-
-      if (existingUser) {
-        throw new Error("E-mail has been used.");
-      }
-      const register = await ctx.prisma.user.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          guestId: input.userId,
-        },
-      });
-      return register;
-    }),
-  createBanner: publicProcedure
-    .input(
-      z.object({
-        image: z.string(),
-        title: z.string(),
-        email: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const banner = await ctx.prisma.user.update({
-        where: {
-          email: input.email,
-        },
-        data: {
-          banner: {
-            create: {
-              title: input.title,
-              image: input.image,
-            },
-          },
-        },
-        include: {
-          banner: true,
-        },
-      });
-      return banner;
-    }),
-  deleteBanner: publicProcedure
-    .input(
-      z.object({
-        id: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const bannerdelet = await ctx.prisma.user.update({
-        where: {
-          email: ctx.session?.user.email ?? "",
-        },
-        data: {
-          banner: {
-            deleteMany: {
-              id: input.id,
-              userId: ctx.session?.user.email ?? "",
-            },
-          },
-        },
-        include: {
-          banner: true,
-        },
-      });
-      return bannerdelet;
     }),
   getRatings: publicProcedure.query(async ({ ctx }) => {
     const rattings = await ctx.prisma.rating.findMany({});
@@ -705,43 +570,21 @@ export const UserRouter = createTRPCRouter({
     });
     return userNotifi;
   }),
-  createAdmin: publicProcedure
-    .input(
-      z.object({
-        name: z
-          .string()
-          .min(2, {
-            message: "name must be at least 2 characters",
-          })
-          .max(50),
-        password: z
-          .string()
-          .min(8, {
-            message: "password must be at least 8 characters",
-          })
-          .max(50),
-        email: z.string(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const existingUser = await ctx.prisma.user.findUnique({
-        where: {
-          email: input.email,
+  getAllListings: publicProcedure.query(async ({ ctx }) => {
+    const listings = await ctx.prisma.listing.findMany({
+      include: {
+        imageSrc: {
+          orderBy: {
+            createdAt: "desc",
+          },
         },
-      });
-
-      if (existingUser) {
-        throw new Error("E-mail has been used.");
-      }
-      const hashedPassword = await bcrypt.hash(input.password, 10);
-      const register = await ctx.prisma.user.create({
-        data: {
-          name: input.name,
-          email: input.email,
-          hashedPassword,
-          role: "admin",
-        },
-      });
-      return register;
-    }),
+        fasilitas: true,
+        reservations: true,
+      },
+      orderBy: {
+        price: "asc",
+      },
+    });
+    return listings;
+  }),
 });

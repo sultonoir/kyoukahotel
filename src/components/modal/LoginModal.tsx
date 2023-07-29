@@ -29,7 +29,7 @@ const LoginModal = () => {
 
   const onSumbit = () => {
     setIsLoading(true);
-    signIn("credentials", {
+    signIn("user", {
       email,
       password,
       redirect: false,

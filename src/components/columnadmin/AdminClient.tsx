@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 "use client";
 import React from "react";
-import { DataTable } from "./data-table";
-import { columns } from "./columns";
 import { api } from "@/utils/api";
 import { type Reservation } from "@prisma/client";
 import AdminDashboard from "@/components/admin/AdminDashboard";
+import AdminData from "./AdminData";
+import RoomsAdmin from "../rooms/RoomsAdmin";
 
 const AdminClient = () => {
   const { data } = api.listings.getReservations.useQuery();
@@ -32,7 +32,8 @@ const AdminClient = () => {
   return (
     <>
       <AdminDashboard reservation={datas} />
-      <DataTable columns={columns} data={datas} />
+      <RoomsAdmin />
+      <AdminData />
     </>
   );
 };

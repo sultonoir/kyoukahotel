@@ -7,6 +7,7 @@ import { type Rating } from "@prisma/client";
 import { motion } from "framer-motion";
 import H1 from "../shared/H1";
 import AvatarMenu from "../navbar/AvatarMenu";
+import { Card } from "../ui/card";
 
 interface HoomeUserFeedbackProps {
   ratings: Rating[];
@@ -58,14 +59,17 @@ const HoomeUserFeedback: React.FC<HoomeUserFeedbackProps> = ({ ratings }) => {
             {ratings.map((rating) => (
               <SwiperSlide
                 key={rating.id}
-                className="flex flex-col items-center justify-center gap-5 p-2"
+                className="flex flex-col items-center justify-center gap-5"
               >
-                <div className="relative mx-auto h-10 w-10">
-                  <AvatarMenu src={rating.guestImage} />
-                </div>
-                <blockquote className=" border-l-2 pl-6 italic">
-                  `{rating.message}`
-                </blockquote>
+                <Card className="p-2">
+                  <div className="relative mx-auto flex h-10 w-10 items-center gap-2">
+                    <AvatarMenu src={rating.guestImage} />
+                    <p>{rating.guestName}</p>
+                  </div>
+                  <blockquote className=" border-l-2 pl-6 italic">
+                    `{rating.message}`
+                  </blockquote>
+                </Card>
               </SwiperSlide>
             ))}
           </Swiper>

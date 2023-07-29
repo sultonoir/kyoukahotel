@@ -4,33 +4,37 @@ import Container from "@/components/shared/Container";
 import EmptyState from "@/components/shared/EmptyState";
 import Loader from "@/components/shared/Loader";
 import { api } from "@/utils/api";
+import { useRouter } from "next/navigation";
 import React from "react";
 
-const index = () => {
-  const { data, isLoading } = api.payment.getReservationsPending.useQuery();
+const IndexPayment = () => {
+  const router = useRouter();
+  const { data, isLoading } = api.user.getUser.useQuery();
 
   if (isLoading) {
     return <Loader />;
   }
 
   if (!data) {
-    return <EmptyState />;
+    return router.push("/");
   }
 
   return (
     <>
       <Navbar />
-      {data.length !== 0 ? (
+      {data.reservations.length !== 0 ? (
         <div className="pt-20">
           <Container>
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
-              {data.map((reserv) => (
-                <ListingPayment
-                  key={reserv.id}
-                  listing={reserv.listing}
-                  reservation={reserv}
-                />
-              ))}
+              {data.reservations
+                .filter((e) => e.status === "pending")
+                .map((reserv) => (
+                  <ListingPayment
+                    key={reserv.id}
+                    listing={reserv.listing}
+                    reservation={reserv}
+                  />
+                ))}
             </div>
           </Container>
         </div>
@@ -45,4 +49,4 @@ const index = () => {
   );
 };
 
-export default index;
+export default IndexPayment;

@@ -1,4 +1,4 @@
-import { type User } from "@prisma/client";
+import { type Admin } from "@prisma/client";
 import { api } from "@/utils/api";
 import React, { useCallback, useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -21,21 +21,23 @@ import { UploadButton } from "@/utils/uploadthing";
 import "@uploadthing/react/styles.css";
 import { X } from "lucide-react";
 
-interface SettingsProps {
-  data: User;
+interface SettingAdminProps {
+  data: Admin;
 }
 
-const Settings: React.FC<SettingsProps> = ({ data }) => {
+const SettingAdmin: React.FC<SettingAdminProps> = ({ data }) => {
   const [image, setImage] = useState(data.image);
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [second, setSecond] = useState("");
+  const ctx = api.useContext();
 
-  const { mutate: user } = api.user.updateUser.useMutation({
+  const { mutate: user } = api.admin.updateAdmin.useMutation({
     onSuccess: (e) => {
-      toast.success("User updated");
+      toast.success("Data updated");
       setImage(e.image ?? "");
+      void ctx.admin.invalidate();
     },
   });
 
@@ -45,6 +47,7 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
       name,
       image: image ?? "",
       email,
+      password,
     });
   };
 
@@ -71,25 +74,10 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
     alert(`ERROR! ${error.message}`);
   };
 
-  const { mutate } = api.user.updatePassword.useMutation({
-    onSuccess: () => {
-      toast.success("Password updated");
-      setPassword("");
-      setSecond("");
-    },
-  });
-
-  const savePassword = () => {
-    mutate({
-      id: data.id,
-      password,
-    });
-  };
-
   return (
     <Tabs
       defaultValue="account"
-      className={`w-full pt-20 sm:mx-auto sm:w-[400px]`}
+      className="w-full pt-20 sm:mx-auto sm:w-[400px]"
     >
       <TabsList className="grid w-full grid-cols-2">
         <TabsTrigger value="account">Account</TabsTrigger>
@@ -194,7 +182,7 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
           <CardFooter>
             <Button
               className="w-full bg-rose-600 text-white hover:bg-rose-500"
-              onClick={savePassword}
+              onClick={safeAccount}
             >
               Save password
             </Button>
@@ -205,4 +193,4 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
   );
 };
 
-export default Settings;
+export default SettingAdmin;

@@ -18,9 +18,7 @@ import bcrypt from "bcrypt";
 declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
-      id: string | null;
-      // ...other properties
-      // role: UserRole;
+      id: string;
     } & DefaultSession["user"];
   }
 
@@ -39,6 +37,7 @@ export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
+      id: "user",
       name: "credentials",
       credentials: {
         email: { label: "email", type: "text" },
@@ -50,6 +49,40 @@ export const authOptions: NextAuthOptions = {
         }
 
         const user = await prisma.user.findUnique({
+          where: {
+            email: credentials.email,
+          },
+        });
+
+        if (!user || !user?.hashedPassword) {
+          throw new Error("User not found");
+        }
+
+        const isCorrectPassword = await bcrypt.compare(
+          credentials.password,
+          user.hashedPassword
+        );
+
+        if (!isCorrectPassword) {
+          throw new Error("Wrong password");
+        }
+
+        return user;
+      },
+    }),
+    CredentialsProvider({
+      id: "admin",
+      name: "credentials",
+      credentials: {
+        email: { label: "email", type: "text" },
+        password: { label: "password", type: "password" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Invalid credentials");
+        }
+
+        const user = await prisma.admin.findUnique({
           where: {
             email: credentials.email,
           },

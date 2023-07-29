@@ -6,7 +6,6 @@ import { useCallback, useState } from "react";
 import BluredImage from "./BluredImage";
 import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 interface ImageUpload {
   value: string[];
@@ -15,12 +14,12 @@ interface ImageUpload {
 }
 
 export default function ImageUpload({ value, onChange, images }: ImageUpload) {
-  const router = useRouter();
+  const ctx = api.useContext();
   const [filevalue, setFilevalue] = useState(value);
   const { mutate } = api.listings.deleteImageByListing.useMutation({
     onSuccess: () => {
       toast.success("Image deleted");
-      router.refresh();
+      void ctx.admin.invalidate();
     },
   });
   const handleUploadComplete = (
@@ -39,7 +38,7 @@ export default function ImageUpload({ value, onChange, images }: ImageUpload) {
   };
   const handleUploadError = (error: Error) => {
     // Do something with the error.
-    alert(`ERROR! ${error.message}`);
+    toast.error(`ERROR! ${error.message}`);
   };
 
   const handleRemove = useCallback(

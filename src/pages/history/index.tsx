@@ -22,15 +22,13 @@ const index = () => {
       <Navbar />
       <div className="py-20">
         <Container>
-          {data &&
-            data.reservations.filter((res) => res.status === "completed")
-              .length === 0 && (
-              <EmptyState
-                title="You not have history"
-                subtitle="Make history first"
-                rentmodal
-              />
-            )}
+          {data && data.reservations.length === 0 && (
+            <EmptyState
+              title="You not have history"
+              subtitle="Make history first"
+              rentmodal
+            />
+          )}
           <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
             {/* {data &&
               data.reservations

@@ -31,12 +31,7 @@ import Facility from "../shared/Facility";
 import ImagePromosiUpload from "../shared/ImagePromosiUpload";
 import { Edit2, Loader2 } from "lucide-react";
 import { toast } from "react-hot-toast";
-import {
-  type User,
-  type Image,
-  type Listing,
-  type Fasilitas,
-} from "@prisma/client";
+import { type Image, type Listing, type Fasilitas } from "@prisma/client";
 import { type FieldValues, type SubmitHandler, useForm } from "react-hook-form";
 import Input from "../shared/Input";
 import TextArea from "../shared/TextArea";
@@ -45,7 +40,6 @@ import EditUpload from "../shared/EditUpload";
 interface EditListingModalProps {
   listingId: string;
   listings: Listing & {
-    user: User | null;
     fasilitas: Fasilitas[];
     imageSrc: Image[];
   };
@@ -65,7 +59,6 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
     setValue,
     watch,
     formState: { errors },
-    reset,
   } = useForm<FieldValues>({
     defaultValues: {
       img: listings.imageSrc,
@@ -82,14 +75,13 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
     },
   });
   const ctx = api.useContext();
-  const { data } = api.user.getUser.useQuery();
+  const { data } = api.admin.getAdmin.useQuery();
   const userId = data?.id ?? "";
 
   const { mutate, isLoading } = api.listings.editListings.useMutation({
     onSuccess: () => {
       setStep(STEPS.CHOISE);
-      reset();
-      void ctx.user.invalidate();
+      void ctx.admin.invalidate();
       toast.success("Rooms updated");
     },
   });
@@ -129,6 +121,7 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
     onSuccess: () => {
       toast.success("Image updated");
       setStep(STEPS.CHOISE);
+      void ctx.admin.invalidate();
     },
   });
 
@@ -143,6 +136,7 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
     onSuccess: () => {
       toast.success("Fasilitas updated");
       setStep(STEPS.CHOISE);
+      void ctx.admin.invalidate();
     },
   });
 

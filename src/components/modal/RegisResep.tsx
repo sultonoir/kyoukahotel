@@ -13,15 +13,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { api } from "@/utils/api";
 import { toast } from "react-hot-toast";
+import Modal from "@/components/modal/Modal";
+import useRegisterAdmin from "@/hooks/useRegisterAdmin";
 
-const Form = () => {
+const RegisResep = () => {
+  const registerModal = useRegisterAdmin();
   const [userError, setUserError] = React.useState("");
   const ctx = api.useContext();
-  const { mutate, isLoading, error } = api.example.create.useMutation({
+  const { mutate, isLoading, error } = api.admin.createAdmin.useMutation({
     onSuccess: () => {
       setName("");
       setPassword("");
       setEmail("");
+      registerModal.onClose();
       void ctx.example.getAll.invalidate();
       toast.success("Account created");
     },
@@ -40,11 +44,14 @@ const Form = () => {
   const [name, setName] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [email, setEmail] = React.useState("");
-  return (
-    <Card className="w-[350px]">
+
+  const body = (
+    <Card className="w-full">
       <CardHeader>
-        <CardTitle>Register</CardTitle>
-        <CardDescription>Welcome to kyouka</CardDescription>
+        <CardTitle>Create an account</CardTitle>
+        <CardDescription>
+          Enter your email below to create your account
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form
@@ -99,13 +106,13 @@ const Form = () => {
               <p className="text-destructive">{userError}</p>
             </div>
             <div className="flex flex-col space-y-1.5">
-              <Label htmlFor="password">password</Label>
+              <Label htmlFor="password">Password</Label>
               {isLoading ? (
                 <Input
                   disabled
                   type="password"
                   id="password"
-                  placeholder="password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -113,7 +120,7 @@ const Form = () => {
                 <Input
                   type="password"
                   id="password"
-                  placeholder="password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -125,8 +132,7 @@ const Form = () => {
       </CardContent>
       <CardFooter>
         <Button
-          type="submit"
-          className="w-full"
+          className="w-full bg-rose-600 text-white hover:bg-rose-500"
           onClick={() =>
             mutate({ name: name, email: email, password: password })
           }
@@ -136,6 +142,14 @@ const Form = () => {
       </CardFooter>
     </Card>
   );
+
+  return (
+    <Modal
+      body={body}
+      isOpen={registerModal.isOpen}
+      onClose={registerModal.onClose}
+    />
+  );
 };
 
-export default Form;
+export default RegisResep;

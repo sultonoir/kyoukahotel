@@ -113,8 +113,8 @@ const AdminDashboard: React.FC<reservations> = ({ reservation }) => {
   });
 
   return (
-    <div className="mt-5 w-full">
-      <div className="flex justify-between">
+    <div className="my-5 w-full">
+      <div className="flex flex-col justify-between sm:flex-row">
         <Heading title="Dashboard" />
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-4">

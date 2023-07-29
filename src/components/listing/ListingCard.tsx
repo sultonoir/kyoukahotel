@@ -1,8 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-
 import {
-  type User,
   type Image,
   type Listing,
   type Fasilitas,
@@ -44,7 +40,6 @@ import Rattings from "../shared/Rattings";
 
 interface ListingCardProps {
   listing: Listing & {
-    user: User | null;
     fasilitas: Fasilitas[];
     imageSrc: Image[];
   };
@@ -55,7 +50,6 @@ interface ListingCardProps {
   rating?: boolean;
   reservation?: Reservation & {
     listing: Listing & {
-      user: User | null;
       fasilitas: Fasilitas[];
       imageSrc: Image[];
     };
@@ -67,11 +61,14 @@ const ListingCard: React.FC<ListingCardProps> = ({
   reservation,
   completed,
   rating,
+  pending,
 }) => {
+  const ctx = api.useContext();
   const router = useRouter();
   const { mutate } = api.listings.deleteListing.useMutation({
     onSuccess: () => {
       toast.success("Property deleted");
+      void ctx.admin.getAllRooms.invalidate();
     },
   });
 
@@ -152,13 +149,12 @@ const ListingCard: React.FC<ListingCardProps> = ({
         </div>
       </CardContent>
       <CardHeader>
-        <Link href={`/rooms/${listing.title}`}>
-          <CardTitle
-            className={`font-normal capitalize hover:text-rose-500 hover:underline`}
-          >
-            {listing.title}
-          </CardTitle>
-        </Link>
+        <CardTitle
+          className={`font-normal capitalize hover:text-rose-500 hover:underline`}
+        >
+          <Link href={`/rooms/${listing.title}`}>{listing.title}</Link>
+        </CardTitle>
+
         {listing.discount && listing.discount > 0 ? (
           <div className="flex flex-col">
             <p className="text-lg font-semibold text-primary">
@@ -221,7 +217,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
         <CardFooter className="flex flex-col items-center gap-2">
           <div className="flex w-full items-center gap-2">
             <Button
-              onClick={() => deleted(listing.userId ?? "", listing.id)}
+              onClick={() => deleted(listing.adminId ?? "", listing.id)}
               variant={"ghost"}
               className="w-full"
               title="Property"
@@ -303,6 +299,7 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </CardFooter>
       )}
+      {pending && <div></div>}
     </Card>
   );
 };

@@ -22,40 +22,42 @@ const HomeNavigations = () => {
         >
           <H1>explore our hotel</H1>
           <div className="mt-6 grid h-[400px] grid-cols-1 gap-5 sm:grid-cols-2">
-            <Link href={`/rooms`}>
-              <div className="group relative col-span-1 h-full overflow-hidden">
-                <Image
-                  src={`/rooms.jpg`}
-                  alt={`rooms`}
-                  fill
-                  sizes="100%"
-                  style={{ objectFit: "cover" }}
-                  quality={100}
-                  className="duration-700 ease-in-out group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
-                <p className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform items-center text-center text-2xl capitalize text-white group-hover:underline">
-                  rooms
-                </p>
-              </div>
-            </Link>
-            <Link href={`/fasilitas`}>
-              <div className="group relative col-span-1 h-full overflow-hidden">
-                <Image
-                  src={`/sky.jpg`}
-                  alt={`rooms`}
-                  fill
-                  sizes="100%"
-                  style={{ objectFit: "cover" }}
-                  quality={100}
-                  className="duration-700 ease-in-out group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
-                <p className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform items-center text-center text-2xl capitalize text-white group-hover:underline">
-                  Facilities
-                </p>
-              </div>
-            </Link>
+            <div className="group relative col-span-1 h-full overflow-hidden">
+              <Image
+                src={`/rooms.jpg`}
+                alt={`rooms`}
+                fill
+                sizes="100%"
+                style={{ objectFit: "cover" }}
+                quality={100}
+                className="duration-700 ease-in-out group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
+              <Link
+                href={"/rooms"}
+                className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform items-center text-center text-2xl capitalize text-white group-hover:underline"
+              >
+                rooms
+              </Link>
+            </div>
+            <div className="group relative col-span-1 h-full overflow-hidden">
+              <Image
+                src={`/sky.jpg`}
+                alt={`rooms`}
+                fill
+                sizes="100%"
+                style={{ objectFit: "cover" }}
+                quality={100}
+                className="duration-700 ease-in-out group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
+              <Link
+                href={"/facilities"}
+                className="absolute left-1/2 top-1/2 z-10 -translate-x-1/2 -translate-y-1/2 transform items-center text-center text-2xl capitalize text-white group-hover:underline"
+              >
+                Facilities
+              </Link>
+            </div>
           </div>
         </motion.div>
       </Container>

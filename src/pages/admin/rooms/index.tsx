@@ -8,18 +8,12 @@ import { api } from "@/utils/api";
 import React from "react";
 
 const index = () => {
-  const { data: user, isLoading } = api.user.getUser.useQuery();
+  const { data, isLoading } = api.admin.getAllRooms.useQuery();
   if (isLoading) {
     return <Loader />;
   }
-  if (!user || user.role !== "admin") {
-    return (
-      <EmptyState
-        title="You are not have access"
-        subtitle="is'n admin"
-        showReset
-      />
-    );
+  if (!data) {
+    return <EmptyState />;
   }
   return (
     <div>
@@ -27,10 +21,9 @@ const index = () => {
       <Container>
         <RentModal />
         <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
-          {user &&
-            user.listing.map((listing) => (
-              <ListingCard key={listing.id} listing={listing} admin />
-            ))}
+          {data.map((listing) => (
+            <ListingCard key={listing.id} listing={listing} admin />
+          ))}
         </div>
       </Container>
     </div>

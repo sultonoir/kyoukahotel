@@ -1,4 +1,3 @@
-import AdminNavbar from "@/components/admin/AdminNavbar";
 import Navbar from "@/components/navbar/Navbar";
 import EmptyState from "@/components/shared/EmptyState";
 import Loader from "@/components/shared/Loader";
@@ -16,7 +15,7 @@ const index = () => {
   }
   return (
     <>
-      {data.role === "admin" ? <AdminNavbar /> : <Navbar />}
+      <Navbar />
       <Settings data={data} />
     </>
   );

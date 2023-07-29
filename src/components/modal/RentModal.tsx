@@ -45,7 +45,7 @@ const RentModal = () => {
   const { data } = api.user.getUser.useQuery();
   const userId = data?.id ?? "";
 
-  const { mutate, isLoading } = api.user.post.useMutation({
+  const { mutate, isLoading } = api.admin.createRooms.useMutation({
     onSuccess: () => {
       setStep(STEPS.INFO);
       setTitle("");
@@ -58,7 +58,7 @@ const RentModal = () => {
       setDiscount("0");
       setImagePromosi("");
       setFasilitas([]);
-      void ctx.user.invalidate();
+      void ctx.admin.invalidate();
       toast.success("Rooms Created");
     },
   });

@@ -46,7 +46,7 @@ const AdminReservasi: React.FC<AdminReservasiProps> = ({ listing }) => {
   const createdUser = () => {
     createUsers({
       email,
-      userId,
+      password: email,
       name,
     });
   };
@@ -75,9 +75,9 @@ const AdminReservasi: React.FC<AdminReservasiProps> = ({ listing }) => {
           />
         </div>
         <div className="flex flex-col space-y-1.5">
-          <Label htmlFor="UserId">UserId</Label>
+          <Label htmlFor="UserId">No.HP</Label>
           <Input
-            placeholder="UserId"
+            placeholder="NO.HP"
             value={userId}
             onChange={(e) => setUserId(e.target.value)}
           />
@@ -87,6 +87,7 @@ const AdminReservasi: React.FC<AdminReservasiProps> = ({ listing }) => {
         <Button
           className="w-full bg-rose-600 text-secondary hover:bg-rose-500"
           onClick={createdUser}
+          disabled={isLoading}
         >
           {isLoading ? (
             <>
@@ -161,7 +162,7 @@ const AdminReservasi: React.FC<AdminReservasiProps> = ({ listing }) => {
       <DialogTrigger>
         <Button className="w-full bg-rose-600 text-white hover:bg-rose-500">
           <ScrollTextIcon className="mr-2" />
-          Create
+          Create Reservations
         </Button>
       </DialogTrigger>
       <DialogContent>

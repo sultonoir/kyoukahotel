@@ -20,7 +20,7 @@ export const ListingsRouter = createTRPCRouter({
       const deletById = await ctx.prisma.listing.deleteMany({
         where: {
           id: input.listingId,
-          userId: input.userId,
+          adminId: input.userId,
         },
       });
       return deletById;
@@ -69,7 +69,7 @@ export const ListingsRouter = createTRPCRouter({
           roomCount: roomCount,
           discount: discount,
           imagePromo: imagePromosi,
-          userId: userId,
+          adminId: userId,
         },
         include: {
           imageSrc: true,
@@ -227,111 +227,112 @@ export const ListingsRouter = createTRPCRouter({
       });
       return complete;
     }),
-  createReservasi: publicProcedure
-    .input(
-      z.object({
-        totalPrice: z.number(),
-        title: z.string(),
-        rooms: z.number(),
-        starDate: z.date(),
-        endDate: z.date(),
-        userId: z.string(),
-        guestName: z.string().optional(),
-        guestImage: z.string().optional(),
-        guestEmail: z.string().optional(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const listing = await ctx.prisma.listing.findUnique({
-        where: {
-          title: input.title,
-        },
-      });
+  // createReservasi: publicProcedure
+  //   .input(
+  //     z.object({
+  //       totalPrice: z.number(),
+  //       title: z.string(),
+  //       rooms: z.number(),
+  //       starDate: z.date(),
+  //       endDate: z.date(),
+  //       userId: z.string(),
+  //       guestName: z.string().optional(),
+  //       guestImage: z.string().optional(),
+  //       guestEmail: z.string().optional(),
+  //     })
+  //   )
+  //   .mutation(async ({ ctx, input }) => {
+  //     const listing = await ctx.prisma.listing.findUnique({
+  //       where: {
+  //         title: input.title,
+  //       },
+  //     });
 
-      if (listing?.roomCount === 0) {
-        throw new Error("room not available.");
-      }
-      const successUrl = `http://localhost:3000/admin`;
-      const cancelUrl = `http://localhost:3000/admin`;
+  //     if (listing?.roomCount === 0) {
+  //       throw new Error("room not available.");
+  //     }
+  //     const successUrl = `http://localhost:3000/admin`;
+  //     const cancelUrl = `http://localhost:3000/admin`;
 
-      await ctx.prisma.listing.update({
-        where: {
-          title: input.title,
-        },
-        data: {
-          roomCount: {
-            decrement: input.rooms,
-          },
-          reservations: {
-            create: {
-              totalPrice: input.totalPrice,
-              rooms: input.rooms,
-              startDate: input.starDate,
-              endDate: input.endDate,
-              guestName: input.guestName,
-              guestEmail: input.guestEmail,
-              guestImage: input.guestImage,
-              guestId: input.userId,
-              userId: input.guestEmail,
-              status: "pending",
-              title: input.title,
-            },
-          },
-        },
-        include: {
-          reservations: true,
-        },
-      });
-      const reser = await ctx.prisma.reservation.findFirst({
-        where: {
-          userId: input.guestEmail,
-        },
-      });
-      const payment = await stripe.checkout.sessions.create({
-        line_items: [
-          {
-            price_data: {
-              currency: "idr",
-              product_data: {
-                name: input.title,
-              },
-              unit_amount: input.totalPrice * 100,
-            },
-            quantity: 1,
-          },
-        ],
-        invoice_creation: {
-          enabled: true,
-          invoice_data: {
-            description: `Invoice for ${input.title}`,
-            metadata: {
-              name: input.guestName ?? "",
-              email: input.guestEmail ?? "",
-              reservationsId: reser?.id ?? "",
-              from: "kyouka",
-            },
-            custom_fields: [
-              {
-                name: "Purchase Order",
-                value: "PO-XYZ",
-              },
-            ],
-            rendering_options: {
-              amount_tax_display: "include_inclusive_tax",
-            },
-            footer: "B2B Inc.",
-          },
-        },
-        metadata: {
-          name: input.guestName ?? "",
-          email: input.guestEmail ?? "",
-        },
-        mode: "payment",
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-      });
-      return payment.url;
-    }),
+  //     await ctx.prisma.listing.update({
+  //       where: {
+  //         title: input.title,
+  //       },
+  //       data: {
+  //         roomCount: {
+  //           decrement: input.rooms,
+  //         },
+  //         reservations: {
+  //           create: {
+  //             totalPrice: input.totalPrice,
+  //             rooms: input.rooms,
+  //             startDate: input.starDate,
+  //             endDate: input.endDate,
+  //             guestName: input.guestName,
+  //             guestEmail: input.guestEmail,
+  //             guestImage: input.guestImage,
+  //             guestId: input.userId,
+  //             userId: input.guestEmail,
+  //             status: "pending",
+  //             title: input.title,
+  //             adminId: input.adminId
+  //           },
+  //         },
+  //       },
+  //       include: {
+  //         reservations: true,
+  //       },
+  //     });
+  //     const reser = await ctx.prisma.reservation.findFirst({
+  //       where: {
+  //         userId: input.guestEmail,
+  //       },
+  //     });
+  //     const payment = await stripe.checkout.sessions.create({
+  //       line_items: [
+  //         {
+  //           price_data: {
+  //             currency: "idr",
+  //             product_data: {
+  //               name: input.title,
+  //             },
+  //             unit_amount: input.totalPrice * 100,
+  //           },
+  //           quantity: 1,
+  //         },
+  //       ],
+  //       invoice_creation: {
+  //         enabled: true,
+  //         invoice_data: {
+  //           description: `Invoice for ${input.title}`,
+  //           metadata: {
+  //             name: input.guestName ?? "",
+  //             email: input.guestEmail ?? "",
+  //             reservationsId: reser?.id ?? "",
+  //             from: "kyouka",
+  //           },
+  //           custom_fields: [
+  //             {
+  //               name: "Purchase Order",
+  //               value: "PO-XYZ",
+  //             },
+  //           ],
+  //           rendering_options: {
+  //             amount_tax_display: "include_inclusive_tax",
+  //           },
+  //           footer: "B2B Inc.",
+  //         },
+  //       },
+  //       metadata: {
+  //         name: input.guestName ?? "",
+  //         email: input.guestEmail ?? "",
+  //       },
+  //       mode: "payment",
+  //       success_url: successUrl,
+  //       cancel_url: cancelUrl,
+  //     });
+  //     return payment.url;
+  //   }),
   getInvoice: publicProcedure
     .input(
       z.object({
@@ -366,7 +367,6 @@ export const ListingsRouter = createTRPCRouter({
             createdAt: "desc",
           },
         },
-        user: true,
         fasilitas: true,
         reservations: true,
       },

@@ -21,7 +21,7 @@ const RegisterModal = () => {
   const registerModal = useRegisterModal();
   const [userError, setUserError] = React.useState("");
   const ctx = api.useContext();
-  const { mutate, isLoading, error } = api.example.create.useMutation({
+  const { mutate, isLoading, error } = api.user.createUser.useMutation({
     onSuccess: () => {
       setName("");
       setPassword("");

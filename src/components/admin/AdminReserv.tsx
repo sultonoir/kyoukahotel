@@ -3,7 +3,7 @@ import React from "react";
 import AdminReservasi from "./AdminReservasi";
 
 const AdminReserv = () => {
-  const { data: listings } = api.user.getListings.useQuery();
+  const { data: listings } = api.admin.getAllRooms.useQuery();
 
   if (!listings) {
     return null;

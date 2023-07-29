@@ -28,7 +28,6 @@ interface RattingsProps {
   id: string;
   reservation?: Reservation & {
     listing: Listing & {
-      user: User | null;
       fasilitas: Fasilitas[];
       imageSrc: Image[];
     };

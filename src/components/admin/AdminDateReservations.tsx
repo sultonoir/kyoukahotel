@@ -100,13 +100,9 @@ const AdminDateReservations: React.FC<AdminDateReservationsProps> = ({
 
   const router = useRouter();
 
-  const { mutate } = api.listings.createReservasi.useMutation({
-    onSuccess: (e) => {
-      toast.success("Reservasi created");
-      router.push(e ?? "");
-    },
-    onError: (e) => {
-      toast.error(e.message);
+  const { mutate } = api.admin.createReservasi.useMutation({
+    onSuccess: (e: string) => {
+      router.push(e);
     },
   });
 

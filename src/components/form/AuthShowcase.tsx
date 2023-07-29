@@ -22,7 +22,7 @@ const AuthShowcase = () => {
 
   const onSumbit = () => {
     setIsLoading(true);
-    signIn("credentials", {
+    signIn("admin", {
       email,
       password,
       redirect: true,

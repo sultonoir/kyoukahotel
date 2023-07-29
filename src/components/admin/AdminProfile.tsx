@@ -35,97 +35,92 @@ import {
 } from "../ui/sheet";
 import { Button } from "../ui/button";
 import { toast } from "react-hot-toast";
-import { type Notifi, type User } from "@prisma/client";
+import { type Admin, type Notifi } from "@prisma/client";
 import useRegisterAdmin from "@/hooks/useRegisterAdmin";
 
 interface Props {
-  user: User & {
+  admin: Admin & {
     notifi: Notifi[];
   };
 }
 
-const AdminProfile: React.FC<Props> = ({ user }) => {
+const AdminProfile: React.FC<Props> = ({ admin }) => {
+  const ctx = api.useContext();
   const register = useRegisterAdmin();
   const router = useRouter();
 
-  const { mutate } = api.user.getNotifications.useMutation();
+  const { mutate } = api.admin.getNotifications.useMutation();
 
   const getNotifications = () => {
     mutate({
-      id: user.email,
+      id: admin.email,
     });
   };
 
-  const { mutate: delet, isLoading } = api.user.deleteNotifications.useMutation(
-    {
-      onSuccess: () => {
-        toast.success("Notifications Deleted");
-      },
-    }
-  );
-
+  const { mutate: delet, isLoading } = api.admin.deleteNotifi.useMutation({
+    onSuccess: () => {
+      toast.success("Notifications Deleted");
+      void ctx.admin.getAdmin.invalidate();
+    },
+  });
   const deletNotif = () => {
     delet({
-      userid: user.id ?? "",
+      id: admin.id,
     });
   };
 
   return (
     <Sheet>
       <DropdownMenu>
-        {user.role === "admin" && (
-          <>
-            <DropdownMenuTrigger asChild>
-              <div className="relative flex cursor-pointer flex-row items-center gap-3 rounded-full border-[1px] border-neutral-200 p-3 transition hover:shadow-md md:px-2 md:py-1">
-                <Menu size={20} />
-                <div className="hidden md:flex">
-                  <AvatarMenu src={user.image} />
-                </div>
-                {user.hasNotifi && (
-                  <div className="absolute -right-[1.25rem] -top-[24px] animate-pulse text-rose-500">
-                    <Dot size={70} />
-                  </div>
-                )}
+        <DropdownMenuTrigger asChild>
+          <div className="relative flex cursor-pointer flex-row items-center gap-3 rounded-full border-[1px] border-neutral-200 p-3 transition hover:shadow-md md:px-2 md:py-1">
+            <Menu size={20} />
+            <div className="hidden md:flex">
+              <AvatarMenu src={admin.image} />
+            </div>
+            {admin.hasNotifi && (
+              <div className="absolute -right-[1.25rem] -top-[24px] animate-pulse text-rose-500">
+                <Dot size={70} />
               </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuLabel className="capitalize">
-                {user.name}
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <SheetTrigger onClick={getNotifications}>
-                  <div className="flex cursor-pointer gap-2">
-                    <Bell size={20} />
-                    Notifications
-                  </div>
-                </SheetTrigger>
-              </DropdownMenuItem>
+            )}
+          </div>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel className="capitalize">
+            {admin.name}
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <SheetTrigger onClick={getNotifications}>
+              <div className="flex cursor-pointer gap-2">
+                <Bell size={20} />
+                Notifications
+              </div>
+            </SheetTrigger>
+          </DropdownMenuItem>
 
-              <DropdownMenuItem
-                className="flex cursor-pointer gap-2"
-                onClick={() => router.push("/setting")}
-              >
-                <Settings2Icon size={20} />
-                Setting
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="flex cursor-pointer gap-2"
-                onClick={register.onOpen}
-              >
-                <UserPlus2 size={20} />
-                Register
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="flex cursor-pointer gap-2"
-                onClick={() => signOut()}
-              >
-                <LogOutIcon size={20} />
-                <p>Logout</p>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </>
-        )}
+          <DropdownMenuItem
+            className="flex cursor-pointer gap-2"
+            onClick={() => router.push("/admin/setting")}
+          >
+            <Settings2Icon size={20} />
+            Setting
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="flex cursor-pointer gap-2"
+            onClick={register.onOpen}
+          >
+            <UserPlus2 size={20} />
+            Register
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className="flex cursor-pointer gap-2"
+            onClick={() => signOut()}
+          >
+            <LogOutIcon size={20} />
+            <p>Logout</p>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
       </DropdownMenu>
       <SheetContent position="right" className="w-[320px]">
         <SheetHeader>
@@ -146,7 +141,7 @@ const AdminProfile: React.FC<Props> = ({ user }) => {
             <p>Delet all notofications</p>
           )}
         </Button>
-        {user.notifi.map((notif) => {
+        {admin.notifi.map((notif) => {
           return (
             <div key={notif.id} className="mt-2 flex gap-2 overflow-y-auto">
               <AvatarMenu src={notif.guestImage} />

@@ -41,7 +41,8 @@ const HomePromosi: React.FC<HomePromosiProps> = ({ promosi }) => {
                     sizes="100%"
                     className="duration-700 ease-in-out group-hover:scale-110"
                   />
-                  <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
+                  <p className="absolute bottom-5 z-10 w-full px-3 text-center text-xl text-white">
                     {promo.title}
                   </p>
                 </div>
@@ -56,6 +57,7 @@ const HomePromosi: React.FC<HomePromosiProps> = ({ promosi }) => {
                     quality={100}
                     sizes="100%"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
                   <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
                     {promo.title}
                   </p>

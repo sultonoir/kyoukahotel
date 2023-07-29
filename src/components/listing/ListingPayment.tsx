@@ -9,9 +9,8 @@ import {
   type Image,
   type Listing,
   type Reservation,
-  type User,
 } from "@prisma/client";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { toast } from "react-hot-toast";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -30,7 +29,7 @@ import Link from "next/link";
 import BluredImage from "../shared/BluredImage";
 import { Banknote, ChevronLeft, TrashIcon } from "lucide-react";
 import { ChevronRight } from "lucide-react";
-import { add, format } from "date-fns";
+import { format } from "date-fns";
 import { play } from "../types";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
@@ -38,13 +37,11 @@ import { DoorClosedIcon } from "lucide-react";
 
 interface ListingCardProps {
   listing: Listing & {
-    user: User | null;
     fasilitas: Fasilitas[];
     imageSrc: Image[];
   };
   reservation: Reservation & {
     listing: Listing & {
-      user: User | null;
       fasilitas: Fasilitas[];
       imageSrc: Image[];
     };
@@ -55,9 +52,11 @@ const ListingPayment: React.FC<ListingCardProps> = ({
   reservation,
   listing,
 }) => {
+  const ctx = api.useContext();
   const { mutate: delet, isLoading } = api.user.deleteReservasi.useMutation({
     onSuccess: () => {
       toast.success("Reservation deleted");
+      void ctx.user.invalidate();
     },
   });
 
@@ -82,17 +81,6 @@ const ListingPayment: React.FC<ListingCardProps> = ({
     const formattedPrice = formatter.format(listing.price);
     return formattedPrice;
   }, [listing.price, reservation]);
-
-  useEffect(() => {
-    const durasi = { minutes: 1 };
-    const adds = add(reservation.startDate, durasi);
-    const newdate = new Date();
-    const expire = newdate > adds;
-
-    if (expire) {
-      deleteReservasi();
-    }
-  }, [reservation.startDate]);
 
   const router = useRouter();
   const { mutate: midtrans, isLoading: loading } =

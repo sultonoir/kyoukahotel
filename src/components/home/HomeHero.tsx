@@ -13,7 +13,7 @@ import Search from "../shared/Search";
 import Loader from "../shared/Loader";
 
 const HomeHero = () => {
-  const { data: listings, isLoading } = api.user.getListings.useQuery();
+  const { data: listings, isLoading } = api.user.getAllListings.useQuery();
 
   if (isLoading) {
     return <Loader />;
