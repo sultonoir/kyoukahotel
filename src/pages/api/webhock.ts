@@ -8,7 +8,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     // Misalnya, mencetak data yang diterima
     console.log(data);
     // Tanggapan dapat dikirim kembali ke sumber permintaan jika diperlukan
-    res.status(200).end("OK");
+    res.status(200).end("OKk");
   } else {
     res.status(405).end();
   }

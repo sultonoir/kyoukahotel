@@ -336,6 +336,11 @@ export const adminApi = createTRPCRouter({
           },
         },
       });
+      const reservasi = await ctx.prisma.reservation.findFirst({
+        where: {
+          guestEmail: input.guestEmail,
+        },
+      });
       const response = await fetch(
         "https://app.sandbox.midtrans.com/snap/v1/transactions",
         {
@@ -348,7 +353,7 @@ export const adminApi = createTRPCRouter({
           },
           body: JSON.stringify({
             transaction_details: {
-              order_id: input.guestEmail,
+              order_id: reservasi?.id,
               gross_amount: input.totalPrice,
             },
             customer_details: {

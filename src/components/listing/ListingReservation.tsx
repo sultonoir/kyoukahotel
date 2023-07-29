@@ -119,11 +119,11 @@ const ListingReservation: React.FC<ListingReservationProps> = ({
       rooms: guestCount,
       totalPrice: calculateTotalPrice().discountedPrice,
       userId: user?.email ?? "",
-      starDate: date?.from || new Date(),
-      endDate: date?.to || new Date(),
+      starDate: date?.from as Date,
+      endDate: date?.to as Date,
       guestName: user?.name ?? "",
       guestEmail: user?.email,
-      guestImage: user?.image ?? "",
+      guestImage: user?.image as string,
       adminId: user?.adminId as string,
     });
   };

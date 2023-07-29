@@ -53,49 +53,49 @@ const AdminData = () => {
         const { data } = api.listings.getReservationsId.useQuery({
           id: param.row.id,
         });
-        if (param.row.status === "success") {
+        if (data?.status === "success") {
           return (
             <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
               Success
             </p>
           );
-        } else if (param.row.status === "completed") {
+        } else if (data?.status === "completed") {
           return (
             <p className="rounded-lg bg-blue-600 px-2 py-1 text-center text-secondary">
               Completed
             </p>
           );
-        } else if (param.row.status === "rattings") {
+        } else if (data?.status === "rattings") {
           return (
             <p className="rounded-lg bg-yellow-600 px-2 py-1 text-center text-secondary">
               Added ratings
             </p>
           );
-        } else if (param.row.status === "capture") {
+        } else if (data?.status === "capture") {
           return (
             <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
               Success
             </p>
           );
-        } else if (param.row.status === "pending") {
+        } else if (data?.status === "pending") {
           return (
             <p className="rounded-lg bg-secondary px-2 py-1 text-center text-primary">
               Pending
             </p>
           );
-        } else if (param.row.status === "settlement") {
+        } else if (data?.status === "settlement") {
           return (
             <p className="rounded-lg bg-green-600 px-2 py-1 text-center text-secondary">
               Success
             </p>
           );
-        } else if (param.row.status === "deny") {
+        } else if (data?.status === "deny") {
           return (
             <p className="rounded-lg bg-rose-600 px-2 py-1 text-center text-secondary">
               Failed
             </p>
           );
-        } else if (param.row.status === "expire") {
+        } else if (data?.status === "expire") {
           return (
             <p className="rounded-lg bg-rose-600 px-2 py-1 text-center text-secondary">
               Failed
@@ -145,7 +145,7 @@ const AdminData = () => {
       width: 90,
       editable: true,
       renderCell: (param) => {
-        const { mutate } = api.listings.completeReservation.useMutation({
+        const { mutate } = api.listings.deleteReservasi.useMutation({
           onSuccess: () => {
             toast.success("stay over");
             void ctx.admin.invalidate();
@@ -154,8 +154,7 @@ const AdminData = () => {
         });
         const onComplete = () => {
           mutate({
-            reservationsId: param.row.id,
-            rooms: param.row.rooms,
+            id: param.row.id,
           });
         };
         return (

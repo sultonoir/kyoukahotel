@@ -407,15 +407,48 @@ export const ListingsRouter = createTRPCRouter({
       if (reserv?.status === "rattings") {
         return null;
       }
+      let status = "";
+
+      if (data.transaction_status === "capture") {
+        status = "success";
+      }
+      if (data.transaction_status === "settlement") {
+        status = "success";
+      }
+      if (data.transaction_status === "deny") {
+        status = "failed";
+      }
+      if (data.transaction_status === "expire") {
+        status = "failed";
+      }
+
       const res = await ctx.prisma.reservation.update({
         where: {
           id: input.id,
         },
         data: {
-          status: data.transaction_status,
+          status: status,
         },
       });
 
       return res;
+    }),
+  deleteReservasi: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const reservasi = await ctx.prisma.reservation.delete({
+          where: {
+            id: input.id,
+          },
+        });
+        return reservasi;
+      } catch (error) {
+        throw new Error("Deleted error");
+      }
     }),
 });

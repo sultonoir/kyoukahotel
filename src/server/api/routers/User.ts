@@ -535,7 +535,7 @@ export const UserRouter = createTRPCRouter({
             accept: "application/json",
             "content-type": "application/json",
             authorization:
-              "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6",
+              "Basic U0ItTWlkLXNlcnZlci1HRkFPQWczc1ZmU2F3X3IwZmlNLTFINmU6SGFqaW1ldGUzNjU=",
           },
           body: JSON.stringify({
             transaction_details: {
