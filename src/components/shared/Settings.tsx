@@ -31,11 +31,13 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
   const [second, setSecond] = useState("");
+  const ctx = api.useContext();
 
   const { mutate: user } = api.user.updateUser.useMutation({
     onSuccess: (e) => {
       toast.success("User updated");
       setImage(e.image ?? "");
+      void ctx.user.invalidate();
     },
   });
 
@@ -76,6 +78,7 @@ const Settings: React.FC<SettingsProps> = ({ data }) => {
       toast.success("Password updated");
       setPassword("");
       setSecond("");
+      void ctx.user.invalidate();
     },
   });
 

@@ -9,7 +9,7 @@ import React from "react";
 
 const IndexPayment = () => {
   const router = useRouter();
-  const { data, isLoading } = api.user.getUser.useQuery();
+  const { data, isLoading } = api.user.getPending.useQuery();
 
   if (isLoading) {
     return <Loader />;
@@ -22,19 +22,17 @@ const IndexPayment = () => {
   return (
     <>
       <Navbar />
-      {data.reservations.length !== 0 ? (
+      {data.length > 0 ? (
         <div className="pt-20">
           <Container>
             <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
-              {data.reservations
-                .filter((e) => e.status === "pending")
-                .map((reserv) => (
-                  <ListingPayment
-                    key={reserv.id}
-                    listing={reserv.listing}
-                    reservation={reserv}
-                  />
-                ))}
+              {data.map((reserv) => (
+                <ListingPayment
+                  key={reserv.id}
+                  listing={reserv.listing}
+                  reservation={reserv}
+                />
+              ))}
             </div>
           </Container>
         </div>

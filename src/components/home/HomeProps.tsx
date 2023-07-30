@@ -11,6 +11,14 @@ import Loader from "../shared/Loader";
 const HomeProps = () => {
   const { data: rattings, isLoading } = api.user.getRatings.useQuery();
   const { data: promosi, isLoading: load } = api.user.getbanner.useQuery();
+
+  const { data: listings, isLoading: isload } =
+    api.user.getAllListings.useQuery();
+
+  if (isload) {
+    return <Loader />;
+  }
+
   if (isLoading) {
     return <Loader />;
   }
@@ -24,14 +32,17 @@ const HomeProps = () => {
   if (!promosi) {
     return <Loader />;
   }
+  if (!listings) {
+    return <Loader />;
+  }
 
   return (
     <>
       <Navbar />
       <div className="py-20">
-        <HomeHero />
+        <HomeHero listings={listings} />
         <HomeProfile ratings={rattings} />
-        <HomeNavigations />
+        <HomeNavigations listings={listings} />
         <HomePromosi promosi={promosi} />
         <HoomeUserFeedback ratings={rattings} />
       </div>

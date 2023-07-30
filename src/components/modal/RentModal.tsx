@@ -42,8 +42,6 @@ const RentModal = () => {
   const [error, setError] = useState("");
   const [descError, setDescError] = useState("");
   const ctx = api.useContext();
-  const { data } = api.user.getUser.useQuery();
-  const userId = data?.id ?? "";
 
   const { mutate, isLoading } = api.admin.createRooms.useMutation({
     onSuccess: () => {
@@ -107,7 +105,6 @@ const RentModal = () => {
       description,
       bed: parseInt(bed, 10),
       fasilitas,
-      userId,
     });
   };
 

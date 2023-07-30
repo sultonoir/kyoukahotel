@@ -37,6 +37,7 @@ import { Button } from "../ui/button";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import Rattings from "../shared/Rattings";
+import PrintReceipt from "../shared/PrintReceipt";
 
 interface ListingCardProps {
   listing: Listing & {
@@ -229,29 +230,11 @@ const ListingCard: React.FC<ListingCardProps> = ({
           </div>
         </CardFooter>
       )}
-      {/* {pending && (
+      {pending && reservation && (
         <CardFooter className="flex flex-col items-center gap-2">
-          <div className="flex w-full items-center gap-2">
-            <Button
-              disabled={loading}
-              className="w-full bg-rose-600 text-white hover:bg-rose-500"
-              onClick={getInvoice}
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Please wait
-                </>
-              ) : (
-                <>
-                  <ScrollTextIcon className="mr-2 h-4 w-4" />
-                  invoice
-                </>
-              )}
-            </Button>
-          </div>
+          <PrintReceipt reservation={reservation} />
         </CardFooter>
-      )} */}
+      )}
       {rating && (
         <CardFooter className="flex flex-col items-center gap-2">
           <div className="flex w-full items-center gap-2">

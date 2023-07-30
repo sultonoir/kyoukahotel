@@ -30,7 +30,7 @@ export const ListingsRouter = createTRPCRouter({
       z.object({
         listingId: z.string(),
         title: z.string(),
-        description: z.string().min(2).max(1000),
+        description: z.string().min(2),
         guestCount: z.number().min(1).max(10, {
           message: "max 10 guest",
         }),

@@ -36,6 +36,7 @@ export const adminApi = createTRPCRouter({
           },
           user: true,
           reservations: true,
+          rating: true,
         },
       });
       return admin;
@@ -94,10 +95,17 @@ export const adminApi = createTRPCRouter({
         roomCount: z.number(),
         discount: z.number().min(0).max(100).optional(),
         imagePromosi: z.string(),
-        userId: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const admin = await ctx.prisma.admin.findUnique({
+        where: {
+          email: ctx.session.user.email as string,
+        },
+      });
+      if (!admin) {
+        throw new Error("Admin not found");
+      }
       const listings = await ctx.prisma.listing.create({
         data: {
           title: input.title,
@@ -111,7 +119,7 @@ export const adminApi = createTRPCRouter({
           imageSrc: {
             create: input.image.map((item: string) => ({ img: item })),
           },
-          adminId: input.userId,
+          adminId: admin.id,
           fasilitas: {
             create: input.fasilitas.map((item: string) => ({
               fasilitas: item,

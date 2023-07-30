@@ -12,7 +12,6 @@ import {
   type Fasilitas,
   type Image,
   type Listing,
-  type User,
   type Reservation,
 } from "@prisma/client";
 import { Button } from "../ui/button";
@@ -22,7 +21,6 @@ import { toast } from "react-hot-toast";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
 import Counter from "./Counter";
-import { useRouter } from "next/navigation";
 
 interface RattingsProps {
   id: string;
@@ -35,13 +33,13 @@ interface RattingsProps {
 }
 
 const Rattings: React.FC<RattingsProps> = ({ reservation, id }) => {
-  const router = useRouter();
+  const ctx = api.useContext();
   const [value, setValue] = useState(1);
   const [message, setMessage] = useState("");
   const { mutate, isLoading } = api.user.createRating.useMutation({
     onSuccess: () => {
       toast.success("Ratting created");
-      router.refresh();
+      void ctx.user.invalidate();
     },
   });
 

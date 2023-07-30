@@ -3,22 +3,33 @@ import Container from "../shared/Container";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/swiper.min.css";
 import { Autoplay, Pagination, Navigation } from "swiper";
-import { type Rating } from "@prisma/client";
+import { type User, type Rating } from "@prisma/client";
 import { motion } from "framer-motion";
 import H1 from "../shared/H1";
 import AvatarMenu from "../navbar/AvatarMenu";
 import { Card } from "../ui/card";
+import { format } from "date-fns";
 
 interface HoomeUserFeedbackProps {
-  ratings: Rating[];
+  ratings: Array<
+    Rating & {
+      user: User | null;
+    }
+  >;
 }
 
 const HoomeUserFeedback: React.FC<HoomeUserFeedbackProps> = ({ ratings }) => {
-  console.log();
+  const truncateString = (str: string, num: number) => {
+    if (str?.length > num) {
+      return str.slice(0, num) + "...";
+    } else {
+      return str;
+    }
+  };
   return (
-    <div className="mt-10 bg-[#F5F5F5]">
+    <div className="my-10 bg-[#F5F5F5]">
       <motion.div
-        className="flex flex-col gap-5 pt-5"
+        className="flex flex-col gap-5 py-5"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.5 }}
@@ -61,13 +72,22 @@ const HoomeUserFeedback: React.FC<HoomeUserFeedbackProps> = ({ ratings }) => {
                 key={rating.id}
                 className="flex flex-col items-center justify-center gap-5"
               >
-                <Card className="p-2">
-                  <div className="relative mx-auto flex h-10 w-10 items-center gap-2">
-                    <AvatarMenu src={rating.guestImage} />
-                    <p>{rating.guestName}</p>
+                <Card className="h-[150px] p-2">
+                  <div className=" mx-auto flex items-center gap-2">
+                    <div className="relative h-10 w-10">
+                      <AvatarMenu
+                        src={rating.guestImage || rating.user?.image}
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <p className="w-full capitalize">{rating.guestName}</p>
+                      <p className="text-xs text-neutral-500">
+                        {format(rating.createdAt, "PP")}
+                      </p>
+                    </div>
                   </div>
-                  <blockquote className=" border-l-2 pl-6 italic">
-                    `{rating.message}`
+                  <blockquote className="border-l-2 pl-6 italic">
+                    `{truncateString(rating.message, 140)}`
                   </blockquote>
                 </Card>
               </SwiperSlide>

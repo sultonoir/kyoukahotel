@@ -4,7 +4,7 @@ import React from "react";
 import RattingsClient from "../../../components/columrating/RattingsClient";
 
 const index = () => {
-  const { data, isLoading } = api.user.getUser.useQuery();
+  const { data, isLoading } = api.admin.getAdmin.useQuery();
 
   if (isLoading) {
     return <Loader />;

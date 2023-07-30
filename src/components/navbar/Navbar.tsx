@@ -7,7 +7,6 @@ import { api } from "@/utils/api";
 import { Button } from "../ui/button";
 import UserMenu from "./UserMenu";
 import useLoginModal from "@/hooks/useLoginModal";
-import Link from "next/link";
 
 const Navbar = () => {
   const { data } = api.user.getUser.useQuery();
@@ -19,9 +18,7 @@ const Navbar = () => {
         <Container>
           <div className="flex flex-row items-center justify-between gap-3 md:gap-0">
             <div className="flex items-center gap-2">
-              <Link href="/">
-                <Logo />
-              </Link>
+              <Logo />
               <Navlink items={NavItem} />
             </div>
             {!data ? (

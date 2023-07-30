@@ -220,6 +220,12 @@ const EditListingModal: React.FC<EditListingModalProps> = ({
         <Button onClick={() => onStepClick(STEPS.FASILITAS)} variant="outline">
           Edit Fasilitas
         </Button>
+        <Button
+          onClick={() => onStepClick(STEPS.DESCRIPTION)}
+          variant="outline"
+        >
+          Edit Tittle & Descriptions
+        </Button>
         <Button onClick={() => onStepClick(STEPS.DISCOUNT)} variant="outline">
           Edit Banner
         </Button>

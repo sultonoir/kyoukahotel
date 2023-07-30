@@ -17,63 +17,50 @@ const index = () => {
     return <EmptyState showReset />;
   }
 
+  const complete = data.reservations.filter((i) => i.status == "completed");
+
+  const ratting = data.reservations.filter((i) => i.status === "rattings");
+
+  const success = data.reservations.filter((i) => i.status === "success");
+
   return (
     <>
       <Navbar />
       <div className="py-20">
         <Container>
-          {data && data.reservations.length === 0 && (
+          {complete.length > 0 || ratting.length > 0 || success.length > 0 ? (
+            <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
+              {success.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing.listing}
+                  reservation={listing}
+                  pending
+                />
+              ))}
+              {complete.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing.listing}
+                  reservation={listing}
+                  rating
+                />
+              ))}
+              {ratting.map((listing) => (
+                <ListingCard
+                  key={listing.id}
+                  listing={listing.listing}
+                  reservation={listing}
+                />
+              ))}
+            </div>
+          ) : (
             <EmptyState
               title="You not have history"
               subtitle="Make history first"
               rentmodal
             />
           )}
-          <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-8">
-            {/* {data &&
-              data.reservations
-                .filter((res) => res.status === "pending")
-                .map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing.listing}
-                    reservation={listing}
-                    pending
-                  />
-                ))} */}
-            {/* {data &&
-              data.reservations
-                .filter((res) => res.status === "capture")
-                .map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing.listing}
-                    reservation={listing}
-                    completed
-                  />
-                ))} */}
-            {data &&
-              data.reservations
-                .filter((res) => res.status === "completed")
-                .map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing.listing}
-                    reservation={listing}
-                    rating
-                  />
-                ))}
-            {data &&
-              data.reservations
-                .filter((res) => res.status === "rattings")
-                .map((listing) => (
-                  <ListingCard
-                    key={listing.id}
-                    listing={listing.listing}
-                    reservation={listing}
-                  />
-                ))}
-          </div>
         </Container>
       </div>
     </>

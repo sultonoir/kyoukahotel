@@ -7,18 +7,20 @@ import BluredImage from "../shared/BluredImage";
 import Link from "next/link";
 import Container from "../shared/Container";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { api } from "@/utils/api";
 import { play } from "../types";
 import Search from "../shared/Search";
-import Loader from "../shared/Loader";
+import { type Fasilitas, type Image, type Listing } from "@prisma/client";
 
-const HomeHero = () => {
-  const { data: listings, isLoading } = api.user.getAllListings.useQuery();
+interface Props {
+  listings: Array<
+    Listing & {
+      imageSrc: Image[];
+      fasilitas: Fasilitas[];
+    }
+  >;
+}
 
-  if (isLoading) {
-    return <Loader />;
-  }
-
+const HomeHero: React.FC<Props> = ({ listings }) => {
   return (
     <Container>
       <div className="relative sm:aspect-video">

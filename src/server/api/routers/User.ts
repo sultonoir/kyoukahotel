@@ -82,7 +82,7 @@ export const UserRouter = createTRPCRouter({
           data: {
             notifi: {
               deleteMany: {
-                adminId: input.id,
+                userId: input.id,
               },
             },
           },
@@ -92,7 +92,27 @@ export const UserRouter = createTRPCRouter({
         throw new Error("error");
       }
     }),
-
+  getPending: publicProcedure.query(async ({ ctx }) => {
+    try {
+      const userNotifi = await ctx.prisma.reservation.findMany({
+        where: {
+          guestEmail: ctx.session?.user.email as string,
+          status: "pending",
+        },
+        include: {
+          listing: {
+            include: {
+              imageSrc: true,
+              fasilitas: true,
+            },
+          },
+        },
+      });
+      return userNotifi;
+    } catch (error) {
+      throw new Error("Data not found");
+    }
+  }),
   createUser: publicProcedure
     .input(
       z.object({
@@ -400,40 +420,50 @@ export const UserRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ ctx, input }) => {
+      const user = await ctx.prisma.user.findUnique({
+        where: {
+          email: input.email,
+        },
+      });
+      if (!user) {
+        throw new Error("user not found");
+      }
       const rattings = await ctx.prisma.reservation.update({
         where: {
           id: input.id,
         },
         data: {
           status: "rattings",
-          // listing: {
-          //   update: {
-          //     user: {
-          //       update: {
-          //         hasNotifi: true,
-          //         notifi: {
-          //           create: {
-          //             message: "Give rattings",
-          //             guestName: input.name,
-          //             guestImage: input.image,
-          //             reservationsId: input.id,
-          //             listingId: input.listingId,
-          //           },
-          //         },
-          //         rating: {
-          //           create: {
-          //             guestName: input.name,
-          //             guestImage: input.image,
-          //             guestEmail: input.email,
-          //             message: input.message,
-          //             value: input.value,
-          //             reservationId: input.id,
-          //           },
-          //         },
-          //       },
-          //     },
-          //   },
-          // },
+          listing: {
+            update: {
+              admin: {
+                update: {
+                  hasNotifi: true,
+                  notifi: {
+                    create: {
+                      message: "Give rattings",
+                      guestName: input.name,
+                      guestImage: input.image,
+                      reservationsId: input.id,
+                      listingId: input.listingId,
+                    },
+                  },
+                  rating: {
+                    create: {
+                      guestName: input.name,
+                      guestImage: input.image,
+                      guestEmail: input.email,
+                      message: input.message,
+                      value: input.value,
+                      reservationId: input.id,
+                      listingId: input.listingId,
+                      userId: user.id,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       });
       return rattings;
@@ -490,7 +520,14 @@ export const UserRouter = createTRPCRouter({
       return password;
     }),
   getRatings: publicProcedure.query(async ({ ctx }) => {
-    const rattings = await ctx.prisma.rating.findMany({});
+    const rattings = await ctx.prisma.rating.findMany({
+      include: {
+        user: true,
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
     return rattings;
   }),
   deleteRatting: publicProcedure
@@ -579,7 +616,7 @@ export const UserRouter = createTRPCRouter({
           },
         },
         fasilitas: true,
-        reservations: true,
+        rating: true,
       },
       orderBy: {
         price: "asc",

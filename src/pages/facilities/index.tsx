@@ -1,14 +1,6 @@
 "use client";
 import Container from "@/components/shared/Container";
 import React from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 
 import Image from "next/image";
 import sky from "public/sky.jpg";
@@ -17,7 +9,7 @@ import cafe from "public/cafe.jpg";
 import { Clock } from "lucide-react";
 import Navbar from "@/components/navbar/Navbar";
 
-const facility = [
+export const facility = [
   {
     name: "Sky Bar",
     image: sky,
@@ -45,56 +37,43 @@ const FacilityClient = () => {
   return (
     <>
       <Navbar />
-      <div className="pt-20">
+      <div className="py-20">
         <Container>
-          <div className="mt-6 grid grid-cols-1 gap-5  sm:grid-cols-8">
-            {facility.map((fas) => (
-              <Dialog key={fas.name}>
-                <DialogTrigger
-                  className="group h-[300px] overflow-hidden rounded-xl border shadow-sm sm:col-span-4 xl:col-span-2"
-                  key={fas.name}
-                >
-                  <div className="relative h-full">
-                    <Image
-                      src={fas.image}
-                      alt={fas.name}
-                      fill
-                      style={{ objectFit: "cover" }}
-                      quality={100}
-                      priority
-                      sizes="100%"
-                      className="duration-700 ease-in-out group-hover:scale-110"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
-                    <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
-                      {fas.name}
-                    </p>
-                  </div>
-                </DialogTrigger>
-                <DialogContent className="w-[990px]">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl">{fas.name}</DialogTitle>
-                    <div className="flex justify-center justify-items-center gap-5">
-                      <Clock size={24} />
-                      <DialogDescription className="text-primary">
-                        {fas.open}
-                      </DialogDescription>
-                      <DialogDescription className="text-primary">
-                        {" "}
-                        -{" "}
-                      </DialogDescription>
-                      <DialogDescription className="text-primary">
-                        {fas.close}
-                      </DialogDescription>
-                    </div>
-                    <DialogDescription className="text-primary">
-                      {fas.desc}
-                    </DialogDescription>
-                  </DialogHeader>
-                </DialogContent>
-              </Dialog>
-            ))}
-          </div>
+          {facility.map((fas, i) => (
+            <div
+              className="mt-6 grid grid-cols-1 gap-5  sm:grid-cols-2"
+              key={i}
+            >
+              <div className="flex flex-col items-center gap-2">
+                <p className="text-2xl font-semibold capitalize">{fas.name}</p>
+                <p className="text-justify text-neutral-500">{fas.desc}</p>
+                <div className="flex gap-2 text-neutral-500">
+                  <Clock size={25} />
+                  <p>{fas.open}</p>
+                  <p>:</p>
+                  <p>{fas.close}</p>
+                </div>
+              </div>
+              <div className="relative h-[300px]">
+                <div className="relative h-full">
+                  <Image
+                    src={fas.image}
+                    alt={fas.name}
+                    fill
+                    style={{ objectFit: "cover" }}
+                    quality={100}
+                    priority
+                    sizes="100%"
+                    className="duration-700 ease-in-out group-hover:scale-110"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black"></div>
+                  <p className="absolute bottom-5 z-10 w-full text-center text-xl text-white">
+                    {fas.name}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ))}
         </Container>
       </div>
     </>
